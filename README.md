@@ -1,4 +1,4 @@
-vida_template
+Document Template for vida.io
 =============
 
-Github HTML template for vida.io
+Github template for vida.io
