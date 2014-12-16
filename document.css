@@ -1,0 +1,11 @@
+/*--- GUIDELINES --- 
+1. Use CSS styling
+2. Use class or id specific to style elements related the visualization only
+3. Avoid using styling that alters this webapp (Example: html, body, h1, a, etc.). 
+   Documents may get flagged if doing so ---*/
+
+#canvas {
+}
+
+#canvas-svg {
+}
