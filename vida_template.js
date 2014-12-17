@@ -1,7 +1,11 @@
 $(document).ready(function() {
   // read manifest
   $.get('manifest.json', function(manifest) {
-    window.config = manifest.properties;
+    window.config = {};
+    var properties = manifest.properties;
+    properties.forEach(function(p) {
+      window.config[p.name] = p.value;
+    });
     
     // load HTML and append to body canvas
     var document_html = manifest.html[0],
@@ -13,6 +17,8 @@ $(document).ready(function() {
       $('#canvas').append(html);
       
       $.get(document_data, function(data) {
+        window.data = data;
+
         // load CSS
         var css = $('<link rel="stylesheet" type="text/css" href="' + document_css + '" />');
         $('body').append(css);
