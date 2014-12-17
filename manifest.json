@@ -2,6 +2,7 @@
   "data": ["document.json"],
   "javascript": ["document.js"],
   "stylesheet": ["document.css"],
+  "html": ["document.html"],
   "properties": [
     {"label":"Data Column 0 (X Axis)","name":"data0","type":"data_column","value":null},
     {"label":"Data Column 1 (Y Axis)","name":"data1","type":"data_column","value":null},
