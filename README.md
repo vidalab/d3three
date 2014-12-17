@@ -35,4 +35,5 @@ Describe your document in manifest.json. Format is as follows:
     properties.value: default property value
 
 Copyright Vida Lab Inc. 2014
+
 License: BSD
