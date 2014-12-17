@@ -33,3 +33,6 @@ Describe your document in manifest.json. Format is as follows:
     properties.name: property name
     properties.type: property type (string/number/boolean/color/data_column)
     properties.value: default property value
+
+Copyright Vida Lab Inc. 2014
+License: BSD
