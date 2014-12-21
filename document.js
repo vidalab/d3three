@@ -11,3 +11,6 @@ var WIDTH = config.width, HEIGHT = config.height;
 
 var svg = d3.select("#canvas-svg")
           .append("svg");
+
+// Use sourceURL to enable debugging in Chrome
+//# sourceURL=document.js

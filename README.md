@@ -34,6 +34,10 @@ Describe your document in manifest.json. Format is as follows:
     properties.type: property type (string/number/boolean/color/data_column)
     properties.value: default property value
 
+Use sourceURL to enable debugging in Chrome:
+
+    //# sourceURL=document.js
+
 Copyright Vida Lab Inc. 2014
 
 License: BSD
