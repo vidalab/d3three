@@ -63,13 +63,10 @@ D3THREE.Axis = function() {
 D3THREE.Axis.prototype.scale = function(s) {
   if (s) {
     this._scale = s;
-  } else {
-    return this._scale;
   }
+  return this;
 }
 
-D3THREE.Axis.prototype.axis = function() {
-  
+d3three.axis = function() {
+  return new D3THREE.Axis();
 }
-
-d3three.axis = new D3THREE.Axis();

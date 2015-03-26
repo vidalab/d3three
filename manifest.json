@@ -7,6 +7,7 @@
     {"label":"Color 0","name":"color0","type":"color","value":"#0f608b"},
     {"label":"Color 1","name":"color1","type":"color","value":"#99ccff"},
     {"label":"Width","name":"width","type":"number","value":800},
-    {"label":"Height","name":"height","type":"number","value":800}
+    {"label":"Height","name":"height","type":"number","value":800},
+    {"label":"Depth","name":"depth","type":"number","value":800}
   ]
 }
