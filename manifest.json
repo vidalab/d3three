@@ -1,16 +1,12 @@
 {
-  "data": ["document.json"],
+  "data": ["yields.tsv"],
   "javascript": ["document.js"],
   "stylesheet": ["document.css"],
   "html": ["document.html"],
   "properties": [
-    {"label":"Data Column 0 (X Axis)","name":"data0","type":"data_column","value":null},
-    {"label":"Data Column 1 (Y Axis)","name":"data1","type":"data_column","value":null},
-    {"label":"Label 0","name":"label0","type":"string","value":"label 0"},
-    {"label":"Label 1","name":"label1","type":"string","value":"label 1"},
     {"label":"Color 0","name":"color0","type":"color","value":"#0f608b"},
     {"label":"Color 1","name":"color1","type":"color","value":"#99ccff"},
     {"label":"Width","name":"width","type":"number","value":800},
-    {"label":"Height","name":"height","type":"number","value":400}
+    {"label":"Height","name":"height","type":"number","value":800}
   ]
 }
