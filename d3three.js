@@ -1,29 +1,27 @@
-var camera, scene, renderer, chart3d, controls;
-
 D3THREE = function() {
 }
 
 D3THREE.prototype.init = function() {
   // standard THREE stuff, straight from examples
-  renderer = new THREE.WebGLRenderer({alpha: true});
-  renderer.setSize( window.innerWidth, window.innerHeight );
-  document.body.appendChild( renderer.domElement );
+  this.renderer = new THREE.WebGLRenderer({alpha: true});
+  this.renderer.setSize( window.innerWidth, window.innerHeight );
+  document.body.appendChild( this.renderer.domElement );
 
-  camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
-  camera.position.z = 400;
+  this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
+  this.camera.position.z = 400;
 
-  controls = new THREE.OrbitControls( camera );
-	//controls.damping = 0.2;
-	//controls.addEventListener( 'change', render );
+  this.controls = new THREE.OrbitControls( this.camera );
+	//this.controls.damping = 0.2;
+	//this.controls.addEventListener( 'change', render );
 
-  scene = new THREE.Scene();
+  this.scene = new THREE.Scene();
 
   //var light = new THREE.DirectionalLight( 0xffffff );
   //light.position.set( 0, 0, 1 );
-  //scene.add( light );
+  //this.scene.add( light );
 
   var light = new THREE.AmbientLight( 0xffffff ); // soft white light
-  scene.add( light );
+  this.scene.add( light );
 
   var geometry = new THREE.BoxGeometry( 20, 20, 20 );
   var material = new THREE.MeshLambertMaterial( {
@@ -32,7 +30,7 @@ D3THREE.prototype.init = function() {
   // create container for our 3D chart
   chart3d = new THREE.Object3D();
   chart3d.rotation.x = 0.6;
-  scene.add( chart3d );
+  this.scene.add( chart3d );
 
   // use D3 to set up 3D bars
   d3.select( chart3d )
@@ -50,8 +48,12 @@ D3THREE.prototype.init = function() {
 D3THREE.prototype.animate = function() {
   requestAnimationFrame( d3three.animate );
   //chart3d.rotation.y += 0.01;
-  renderer.render( scene, camera );
-  //controls.update();
+  d3three.renderer.render( d3three.scene, d3three.camera );
+  //this.controls.update();
+}
+
+D3THREE.prototype.render = function(element) {
+  element.render(this);
 }
 
 d3three = new D3THREE();
@@ -65,6 +67,21 @@ D3THREE.Axis.prototype.scale = function(s) {
     this._scale = s;
   }
   return this;
+}
+
+D3THREE.Axis.prototype.render = function(dt) {
+  var material = new THREE.LineBasicMaterial({
+    color: 0x0000ff
+  });
+  
+  var geometry = new THREE.Geometry();
+  geometry.vertices.push(new THREE.Vector3(-100, 0, 0));
+  geometry.vertices.push(new THREE.Vector3(0, 100, 0));
+  geometry.vertices.push(new THREE.Vector3(100, 0, 0));
+  
+  var line = new THREE.Line(geometry, material);
+  
+  dt.scene.add(line);
 }
 
 d3three.axis = function() {

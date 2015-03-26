@@ -31,13 +31,16 @@ var x = d3.time.scale()
 var y = d3.scale.linear()
           .range([0, config.height]);
 
-var z = d3.scale.linear()
-          .range([0, config.depth]);
-
 var xAxis = d3three.axis()
                 .scale(x);
 var yAxis = d3three.axis()
                 .scale(y);
+
+x.domain(d3.extent(data, function(d) { return d3.time.format("%m/%d/%y").parse(d.Date); }));
+y.domain(d3.extent(data, function(d) { return d["1 Mo"]; }));
+
+d3three.render(xAxis);
+d3three.render(yAxis);
 
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
