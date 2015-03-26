@@ -7,8 +7,6 @@
 3. To define customizable properties, use capitalized variable names,
     and define them in Properties tab ---*/
 
-var barData = [4, 8, 15, 16, 23, 42];
-
 // these are, as before, to make D3's .append() and .selectAll() work
 THREE.Object3D.prototype.appendChild = function (c) { this.add(c); return c; };
 THREE.Object3D.prototype.querySelectorAll = function () { return []; };
@@ -31,16 +29,26 @@ var x = d3.time.scale()
 var y = d3.scale.linear()
           .range([0, config.height]);
 
+var z = d3.scale.linear()
+          .range([0, config.depth]);
+
 var xAxis = d3three.axis()
-                .scale(x);
+                .scale(x)
+                .orient("x");
 var yAxis = d3three.axis()
-                .scale(y);
+                .scale(y)
+                .orient("y");
+var zAxis = d3three.axis()
+                .scale(z)
+                .orient("z");
 
 x.domain(d3.extent(data, function(d) { return d3.time.format("%m/%d/%y").parse(d.Date); }));
 y.domain(d3.extent(data, function(d) { return d["1 Mo"]; }));
+z.domain(d3.extent(data, function(d) { return d["1 Mo"]; }));
 
 d3three.render(xAxis);
 d3three.render(yAxis);
+d3three.render(zAxis);
 
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;

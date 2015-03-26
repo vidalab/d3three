@@ -7,8 +7,8 @@ D3THREE.prototype.init = function() {
   this.renderer.setSize( window.innerWidth, window.innerHeight );
   document.body.appendChild( this.renderer.domElement );
 
-  this.camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
-  this.camera.position.z = 400;
+  this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
+  this.camera.position.z = 800;
 
   this.controls = new THREE.OrbitControls( this.camera );
 	//this.controls.damping = 0.2;
@@ -22,24 +22,6 @@ D3THREE.prototype.init = function() {
 
   var light = new THREE.AmbientLight( 0xffffff ); // soft white light
   this.scene.add( light );
-
-  var geometry = new THREE.BoxGeometry( 20, 20, 20 );
-  var material = new THREE.MeshLambertMaterial( {
-      color: config.color1, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
-
-  // create container for our 3D chart
-  chart3d = new THREE.Object3D();
-  chart3d.rotation.x = 0.6;
-  this.scene.add( chart3d );
-
-  // use D3 to set up 3D bars
-  d3.select( chart3d )
-      .selectAll()
-      .data(barData)
-  .enter().append( function() { return new THREE.Mesh( geometry, material ); } )
-      .attr("position.x", function(d, i) { return 30 * i; })
-      .attr("position.y", function(d, i) { return d; })
-      .attr("scale.y", function(d, i) { return d / 10; })
 
   // continue with THREE stuff
   window.addEventListener( 'resize', onWindowResize, false );
@@ -60,6 +42,14 @@ d3three = new D3THREE();
 
 D3THREE.Axis = function() {
   this._scale = d3.scale.linear();
+  this._orient = "x";
+}
+
+D3THREE.Axis.prototype.orient = function(o) {
+  if (o) {
+    this._orient = o;
+  }
+  return this;
 }
 
 D3THREE.Axis.prototype.scale = function(s) {
@@ -71,13 +61,26 @@ D3THREE.Axis.prototype.scale = function(s) {
 
 D3THREE.Axis.prototype.render = function(dt) {
   var material = new THREE.LineBasicMaterial({
-    color: 0x0000ff
+    color: 0xbbbbbb,
+    linewidth: 3
   });
   
   var geometry = new THREE.Geometry();
-  geometry.vertices.push(new THREE.Vector3(-100, 0, 0));
-  geometry.vertices.push(new THREE.Vector3(0, 100, 0));
-  geometry.vertices.push(new THREE.Vector3(100, 0, 0));
+  
+  var interval = this._scale.range()[1] / this._scale.ticks().length;
+  for (var i = 0; i < this._scale.ticks().length; i++) {
+    if (this._orient === "x") {
+      // tick
+      geometry.vertices.push(new THREE.Vector3(i * interval, 0, 0));
+    } else if (this._orient === "y") {
+      // tick
+      geometry.vertices.push(new THREE.Vector3(0, i * interval, 0));
+    } else if (this._orient === "z") {
+      // tick
+      geometry.vertices.push(new THREE.Vector3(0, 0, i * interval));
+    }
+    
+  }
   
   var line = new THREE.Line(geometry, material);
   
