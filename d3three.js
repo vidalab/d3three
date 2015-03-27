@@ -4,20 +4,20 @@ D3THREE = function() {
 
 D3THREE.prototype.init = function() {
   // standard THREE stuff, straight from examples
-  this.renderer = new THREE.WebGLRenderer({alpha: true});
+  this.renderer = new THREE.WebGLRenderer({alpha: false});
   this.renderer.setSize( window.innerWidth, window.innerHeight );
   document.getElementById('canvas-svg').appendChild( this.renderer.domElement );
 
-  this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
+  this.camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 1, 1000 );
   this.camera.position.z = 800;
 
   this.controls = new THREE.OrbitControls( this.camera );
 
   this.scene = new THREE.Scene();
 
-  var light = new THREE.AmbientLight( 0xffffff ); // soft white light
+  var light = new THREE.AmbientLight( 0xbbbbb ); // soft white light
   this.scene.add( light );
-  
+    
   this.scene.add(this.labelGroup);
 
   // continue with THREE stuff
@@ -82,11 +82,19 @@ D3THREE.Axis.prototype.render = function(dt) {
   
   var geometry = new THREE.Geometry();
   
-  var interval = this._scale.range()[1] / this._scale.ticks().length;
-  for (var i = 0; i < this._scale.ticks().length; i++) {
+  var interval, ticks;
+  if (typeof(this._scale.rangeBand) === 'function') {
+    // ordinal scale
+    interval = this._scale.range()[1];
+    ticks = this._scale.domain();
+  } else {
+    interval = this._scale.range()[1] / this._scale.ticks().length;
+    ticks = this._scale.ticks();
+  }
+  for (var i = 0; i < ticks.length; i++) {
     var tickMarGeometry = new THREE.Geometry();
     
-    var shape = new THREE.TextGeometry(this._tickFormat(this._scale.ticks()[i]),
+    var shape = new THREE.TextGeometry(this._tickFormat(ticks[i]),
       {
         size: 5,
         height: 1,

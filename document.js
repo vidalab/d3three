@@ -26,8 +26,12 @@ d3three.animate();
 
 var x = d3.time.scale()
           .range([0, config.width]);
-var y = d3.scale.linear()
-          .range([0, config.height]);
+
+//var y = d3.scale.linear()
+//          .range([0, config.height]);
+
+var y = d3.scale.ordinal()
+          .rangeBands([0, config.height]);
 
 var z = d3.scale.linear()
           .range([0, config.depth]);
@@ -38,13 +42,17 @@ var xAxis = d3three.axis()
                 .tickFormat(d3.time.format("%m-%d-%y"));
 var yAxis = d3three.axis()
                 .scale(y)
-                .orient("y");
+                .orient("z");
 var zAxis = d3three.axis()
                 .scale(z)
-                .orient("z");
+                .orient("y");
 
 x.domain(d3.extent(data, function(d) { return d3.time.format("%m/%d/%y").parse(d.Date); }));
-y.domain(d3.extent(data, function(d) { return d["1 Mo"]; }));
+
+var yDomain = Object.keys(data[0]);
+yDomain.splice(yDomain.indexOf('Date'), 1);
+y.domain(yDomain);
+
 z.domain(d3.extent(data, function(d) { return d["1 Mo"]; }));
 
 d3three.render(xAxis);
