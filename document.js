@@ -34,7 +34,8 @@ var z = d3.scale.linear()
 
 var xAxis = d3three.axis()
                 .scale(x)
-                .orient("x");
+                .orient("x")
+                .tickFormat(d3.time.format("%m-%d-%y"));
 var yAxis = d3three.axis()
                 .scale(y)
                 .orient("y");
@@ -51,10 +52,10 @@ d3three.render(yAxis);
 d3three.render(zAxis);
 
 function onWindowResize() {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
+  d3three.camera.aspect = window.innerWidth / window.innerHeight;
+  d3three.camera.updateProjectionMatrix();
 
-  renderer.setSize( window.innerWidth, window.innerHeight );
+  d3three.renderer.setSize( window.innerWidth, window.innerHeight );
 }
 
 
