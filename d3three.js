@@ -4,11 +4,22 @@ D3THREE = function() {
 
 D3THREE.prototype.init = function() {
   // standard THREE stuff, straight from examples
-  this.renderer = new THREE.WebGLRenderer({alpha: false});
+  this.renderer = new THREE.WebGLRenderer({antialias: true, alpha : true});
+  this.renderer.shadowMapEnabled = true;
+  this.renderer.shadowMapType = THREE.PCFSoftShadow;
+  this.renderer.shadowMapSoft = true;
+  this.renderer.shadowCameraNear = 1000;
+  this.renderer.shadowCameraFar = 10000;
+  this.renderer.shadowCameraFov = 50;
+  this.renderer.shadowMapBias = 0.0039;
+  this.renderer.shadowMapDarkness = 0.25;
+  this.renderer.shadowMapWidth = 10000;
+  this.renderer.shadowMapHeight = 10000;
+  this.renderer.physicallyBasedShading = true;
   this.renderer.setSize( window.innerWidth, window.innerHeight );
   document.getElementById('canvas-svg').appendChild( this.renderer.domElement );
 
-  this.camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 1, 1000 );
+  this.camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 1, 100000 );
   this.camera.position.z = 800;
 
   this.controls = new THREE.OrbitControls( this.camera );
@@ -67,6 +78,17 @@ D3THREE.Axis.prototype.tickFormat = function(f) {
     this._tickFormat = f;
   }
   return this;
+}
+
+D3THREE.Axis.prototype.interval = function() {
+  var interval;
+  if (typeof(this._scale.rangeBand) === 'function') {
+    // ordinal scale
+    interval = this._scale.range()[1];
+  } else {
+    interval = this._scale.range()[1] / this._scale.ticks().length;
+  }
+  return interval;
 }
 
 D3THREE.Axis.prototype.render = function(dt) {
