@@ -145,13 +145,6 @@ d3three.scene.add(mesh);*/
 
 /* custom surface */
 
-function onWindowResize() {
-  d3three.camera.aspect = window.innerWidth / window.innerHeight;
-  d3three.camera.updateProjectionMatrix();
-
-  d3three.renderer.setSize( window.innerWidth, window.innerHeight );
-}
-
 
 // Use sourceURL to enable debugging in Chrome
 //# sourceURL=document.js

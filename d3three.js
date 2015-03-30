@@ -168,3 +168,10 @@ D3THREE.Axis.prototype.render = function(dt) {
 d3three.axis = function() {
   return new D3THREE.Axis();
 }
+
+onWindowResize = function() {
+  d3three.camera.aspect = window.innerWidth / window.innerHeight;
+  d3three.camera.updateProjectionMatrix();
+
+  d3three.renderer.setSize( window.innerWidth, window.innerHeight );
+}
