@@ -110,11 +110,40 @@ d3.select(chart3d)
         return x(d.x);
       })
       .attr("position.z", function(d) {
-        return z(d.z);
-      })
-      .attr("position.y", function(d) {
         return y(d.y);
       })
+      .attr("position.y", function(d) {
+        return z(d.z);
+      });
+
+/* custom surface */
+
+/*var vertices = [];
+var holes = [];
+var triangles, mesh;
+var geometry = new THREE.Geometry();
+var material = new THREE.MeshBasicMaterial({color: 0x4682B4});
+
+for (var i = 0; i < threeData.length; i++) {
+  vertices.push(new THREE.Vector3(x(threeData[i].x), y(threeData[i].y), z(threeData[i].z)));
+}
+console.log(threeData);
+console.log(vertices);
+
+geometry.vertices = vertices;
+
+triangles = THREE.Shape.Utils.triangulateShape ( vertices, holes );
+
+for( var i = 0; i < triangles.length; i++ ){
+
+    geometry.faces.push( new THREE.Face3( triangles[i][0], triangles[i][1], triangles[i][2] ));
+
+}
+
+mesh = new THREE.Mesh( geometry, material );
+d3three.scene.add(mesh);*/
+
+/* custom surface */
 
 function onWindowResize() {
   d3three.camera.aspect = window.innerWidth / window.innerHeight;
