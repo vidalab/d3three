@@ -117,20 +117,95 @@ d3.select(chart3d)
       });
 
 /* custom surface */
+function distance (v1, v2)
+{
+  var dx = v1.x - v2.x;
+  var dy = v1.y - v2.y;
+  var dz = v1.z - v2.z;
 
-/*var vertices = [];
+  return Math.sqrt(dx*dx+dz*dz);
+}
+
+var vertices = [];
 var holes = [];
 var triangles, mesh;
 var geometry = new THREE.Geometry();
 var material = new THREE.MeshBasicMaterial({color: 0x4682B4});
 
 for (var i = 0; i < threeData.length; i++) {
-  vertices.push(new THREE.Vector3(x(threeData[i].x), y(threeData[i].y), z(threeData[i].z)));
+  vertices.push(new THREE.Vector3(x(threeData[i].x), z(threeData[i].z), y(threeData[i].y)));
 }
-console.log(threeData);
-console.log(vertices);
 
 geometry.vertices = vertices;
+
+for (var i = 0; i < vertices.length; i++) {
+  // find three closest vertices to generate surface
+  var v1, v2, v3;
+  var distances = [];
+  
+  // find vertices in same y or y + 1 row
+  var minY = Number.MAX_VALUE;
+  for (var j = i + 1; j < vertices.length; j++) {
+    if (i !== j && vertices[j].z > vertices[i].z) {
+      if (vertices[j].z < minY) {
+        minY = vertices[j].z;
+      }
+    }
+  }
+  
+  var rowVertices = [], row2Vertices = [];
+  for (var j = i + 1; j < vertices.length; j++) {
+    if (i !== j && (vertices[j].z === vertices[i].z)) {
+      rowVertices.push({index: j, v: vertices[j]});
+    }
+    if (i !== j && (vertices[j].z === minY)) {
+      row2Vertices.push({index: j, v: vertices[j]});
+    }
+  }
+  
+  if (rowVertices.length >= 1 && row2Vertices.length >= 2) {
+    // find smallest x
+    rowVertices.sort(function(a, b) {
+      if (a.v.x < b.v.x) {
+        return -1;
+      } else if (a.v.x === b.v.x) {
+        return 0;
+      } else {
+        return 1;
+      }
+    });
+    
+    v1 = rowVertices[0].index;
+    
+    row2Vertices.sort(function(a, b) {
+      if (a.v.x < b.v.x) {
+        return -1;
+      } else if (a.v.x === b.v.x) {
+        return 0;
+      } else {
+        return 1;
+      }
+    });
+    
+    v2 = row2Vertices[0].index;
+    v3 = row2Vertices[1].index;
+    
+    var fv = [i, v1, v2, v3];
+    fv = fv.sort(function(a, b) {
+      if (a < b) return -1;
+      else if (a === b) return 0;
+      else return 1;
+    });
+    
+    geometry.faces.push( new THREE.Face3(fv[0], fv[1], fv[3]));
+    geometry.faces.push( new THREE.Face3(fv[0], fv[3], fv[2]));
+  }
+}
+
+//console.log(threeData);
+//console.log(vertices);
+
+/*geometry.vertices = vertices;
 
 triangles = THREE.Shape.Utils.triangulateShape ( vertices, holes );
 
@@ -138,12 +213,14 @@ for( var i = 0; i < triangles.length; i++ ){
 
     geometry.faces.push( new THREE.Face3( triangles[i][0], triangles[i][1], triangles[i][2] ));
 
-}
+}*/
 
 mesh = new THREE.Mesh( geometry, material );
-d3three.scene.add(mesh);*/
+d3three.scene.add(mesh);
 
 /* custom surface */
+
+
 
 
 // Use sourceURL to enable debugging in Chrome
