@@ -8,6 +8,6 @@
     {"label":"Color 1","name":"color1","type":"color","value":"#99ccff"},
     {"label":"Width","name":"width","type":"number","value":400},
     {"label":"Height","name":"height","type":"number","value":400},
-    {"label":"Depth","name":"depth","type":"number","value":400}
+    {"label":"Depth","name":"depth","type":"number","value":200}
   ]
 }

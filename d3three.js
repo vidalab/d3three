@@ -1,3 +1,5 @@
+var chartOffset = -200;
+
 D3THREE = function() {
   this.labelGroup = new THREE.Object3D();
 }
@@ -10,7 +12,7 @@ D3THREE.prototype.init = function() {
   this.renderer.shadowMapSoft = true;
   this.renderer.shadowCameraNear = 1000;
   this.renderer.shadowCameraFar = 10000;
-  this.renderer.shadowCameraFov = 50;
+  //this.renderer.shadowCameraFov = 50;
   this.renderer.shadowMapBias = 0.0039;
   this.renderer.shadowMapDarkness = 0.25;
   this.renderer.shadowMapWidth = 10000;
@@ -20,7 +22,9 @@ D3THREE.prototype.init = function() {
   document.getElementById('canvas-svg').appendChild( this.renderer.domElement );
 
   this.camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 1, 100000 );
-  this.camera.position.z = 800;
+  this.camera.position.z = -1000;
+  this.camera.position.x = -800;
+  this.camera.position.y = 600;
 
   this.controls = new THREE.OrbitControls( this.camera );
 
@@ -127,34 +131,34 @@ D3THREE.Axis.prototype.render = function(dt) {
     
     if (this._orient === "x") {
       // tick
-      geometry.vertices.push(new THREE.Vector3(i * interval, 0, 0));
+      geometry.vertices.push(new THREE.Vector3(i * interval, chartOffset, 0));
       
-      tickMarGeometry.vertices.push(new THREE.Vector3(i * interval, 0, 0));
-      tickMarGeometry.vertices.push(new THREE.Vector3(i * interval, -10, 0));
+      tickMarGeometry.vertices.push(new THREE.Vector3(i * interval, chartOffset, 0));
+      tickMarGeometry.vertices.push(new THREE.Vector3(i * interval, -10 + chartOffset, 0));
       var tickLine = new THREE.Line(tickMarGeometry, tickMaterial);
       dt.scene.add(tickLine);
       
-      words.position.set(i * interval, -20, 0);
+      words.position.set(i * interval, -20 + chartOffset, 0);
     } else if (this._orient === "y") {
       // tick
-      geometry.vertices.push(new THREE.Vector3(0, i * interval, 0));
+      geometry.vertices.push(new THREE.Vector3(0, i * interval + chartOffset, 0));
 
-      tickMarGeometry.vertices.push(new THREE.Vector3(0, i * interval, 0));
-      tickMarGeometry.vertices.push(new THREE.Vector3(-10, i * interval, 0));
+      tickMarGeometry.vertices.push(new THREE.Vector3(0, i * interval + chartOffset, 0));
+      tickMarGeometry.vertices.push(new THREE.Vector3(-10, i * interval + chartOffset, 0));
       var tickLine = new THREE.Line(tickMarGeometry, tickMaterial);
       dt.scene.add(tickLine);
       
-      words.position.set(-20, i * interval, 0);
+      words.position.set(-20, i * interval + chartOffset, 0);
     } else if (this._orient === "z") {
       // tick
-      geometry.vertices.push(new THREE.Vector3(0, 0, i * interval));
+      geometry.vertices.push(new THREE.Vector3(0, chartOffset, i * interval));
       
-      tickMarGeometry.vertices.push(new THREE.Vector3(0, 0, i * interval));
-      tickMarGeometry.vertices.push(new THREE.Vector3(0, -10, i * interval));
+      tickMarGeometry.vertices.push(new THREE.Vector3(0, 0 + chartOffset, i * interval));
+      tickMarGeometry.vertices.push(new THREE.Vector3(0, -10 + chartOffset, i * interval));
       var tickLine = new THREE.Line(tickMarGeometry, tickMaterial);
       dt.scene.add(tickLine);
       
-      words.position.set(0, -20, i * interval);
+      words.position.set(0, -20 + chartOffset, i * interval);
     }
     
     dt.labelGroup.add(words);

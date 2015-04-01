@@ -28,11 +28,11 @@ var z = d3.scale.linear()
 
 var xAxis = d3three.axis()
                 .scale(x)
-                .orient("x")
+                .orient("z")
                 .tickFormat(d3.time.format("%m-%d-%y"));
 var yAxis = d3three.axis()
                 .scale(y)
-                .orient("z");
+                .orient("x");
 var zAxis = d3three.axis()
                 .scale(z)
                 .orient("y");
@@ -96,7 +96,7 @@ d3.select(chart3d)
         return y(d.y);
       })
       .attr("position.y", function(d) {
-        return z(d.z);
+        return z(d.z) + chartOffset;
       });
 
 /* custom surface */
@@ -116,7 +116,8 @@ var geometry = new THREE.Geometry();
 var material = new THREE.MeshBasicMaterial({color: 0x4682B4});
 
 for (var i = 0; i < threeData.length; i++) {
-  vertices.push(new THREE.Vector3(x(threeData[i].x), z(threeData[i].z), y(threeData[i].y)));
+  vertices.push(new THREE.Vector3(x(threeData[i].x),
+    z(threeData[i].z) + chartOffset, y(threeData[i].y)));
 }
 
 geometry.vertices = vertices;
