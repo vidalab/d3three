@@ -42,14 +42,14 @@ D3THREE.prototype.init = function(divId) {
   this.renderer.shadowMapHeight = 10000;
   this.renderer.physicallyBasedShading = true;
   
-  var width = document.getElementById(divId).offsetWidth,
-      height = document.getElementById(divId).offsetHeight;
+  this.width = document.getElementById(divId).offsetWidth;
+  this.height = document.getElementById(divId).offsetHeight;
   
-  this.renderer.setSize( width, height );
+  this.renderer.setSize( this.width, this.height );
   
   document.getElementById(divId).appendChild( this.renderer.domElement );
 
-  this.camera = new THREE.PerspectiveCamera( 30, width / height, 1, 100000 );
+  this.camera = new THREE.PerspectiveCamera( 30, this.width / this.height, 1, 100000 );
   this.camera.position.z = -1000;
   this.camera.position.x = -800;
   this.camera.position.y = 600;
@@ -65,10 +65,10 @@ D3THREE.prototype.init = function(divId) {
 
   var self = this;
   var onWindowResize = function() {
-    self.camera.aspect = width / height;
+    self.camera.aspect = self.width / self.height;
     self.camera.updateProjectionMatrix();
 
-    self.renderer.setSize( width, height );
+    self.renderer.setSize( self.width, self.height );
   }
   
   window.addEventListener( 'resize', onWindowResize, false );
@@ -220,9 +220,26 @@ d3three.axis = function(dt) {
 // Scatter plot
 D3THREE.Scatter = function(dt) {
   this._dt = dt;
+  this._nodeGroup = new THREE.Object3D();
+  
+  // mouse move
+  this._dt.renderer.domElement.addEventListener( 'mousemove', this.onDocumentMouseMove, false );
 }
 
 D3THREE.Scatter.prototype.onDocumentMouseMove = function(e) {
+  // detect intersected spheres
+  var vector = new THREE.Vector3();
+  vector.x = ( e.clientX / this._dt.width ) * 2 - 1;
+  vector.y = 1 - ( e.clientY / this._dt.height ) * 2;
+  vector.z = 0.5;
+  
+  // create a check ray
+  var projector = new THREE.Projector();
+	projector.unprojectVector( vector, this._dt.camera );
+  var ray = new THREE.Raycaster( this._dt.camera.position,
+    vector.sub( this._dt.camera.position ).normalize() );
+  
+  
 }
 
 D3THREE.Scatter.prototype.render = function(data) {
@@ -230,13 +247,17 @@ D3THREE.Scatter.prototype.render = function(data) {
   var material = new THREE.MeshLambertMaterial( {
       color: 0x4682B4, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
 
-  var chart3d = new THREE.Object3D();
-  this._dt.scene.add(chart3d);
+  this._dt.scene.add(this._nodeGroup);
+  
+  var self = this;
 
-  d3.select(chart3d)
+  d3.select(this._nodeGroup)
         .selectAll()
         .data(data)
-    .enter().append( function() { return new THREE.Mesh( geometry, material ); } )
+    .enter().append( function() {
+      var mesh = new THREE.Mesh( geometry, material );
+      return mesh;
+    } )
         .attr("position.z", function(d) {
           return x(d.x);
         })
