@@ -89,10 +89,10 @@ d3.select(chart3d)
       .selectAll()
       .data(threeData)
   .enter().append( function() { return new THREE.Mesh( geometry, material ); } )
-      .attr("position.x", function(d) {
+      .attr("position.z", function(d) {
         return x(d.x);
       })
-      .attr("position.z", function(d) {
+      .attr("position.x", function(d) {
         return y(d.y);
       })
       .attr("position.y", function(d) {
@@ -116,8 +116,8 @@ var geometry = new THREE.Geometry();
 var material = new THREE.MeshBasicMaterial({color: 0x4682B4});
 
 for (var i = 0; i < threeData.length; i++) {
-  vertices.push(new THREE.Vector3(x(threeData[i].x),
-    z(threeData[i].z) + chartOffset, y(threeData[i].y)));
+  vertices.push(new THREE.Vector3(y(threeData[i].y),
+    z(threeData[i].z) + chartOffset, x(threeData[i].x)));
 }
 
 geometry.vertices = vertices;
@@ -130,19 +130,19 @@ for (var i = 0; i < vertices.length; i++) {
   // find vertices in same y or y + 1 row
   var minY = Number.MAX_VALUE;
   for (var j = i + 1; j < vertices.length; j++) {
-    if (i !== j && vertices[j].z > vertices[i].z) {
-      if (vertices[j].z < minY) {
-        minY = vertices[j].z;
+    if (i !== j && vertices[j].x > vertices[i].x) {
+      if (vertices[j].x < minY) {
+        minY = vertices[j].x;
       }
     }
   }
   
   var rowVertices = [], row2Vertices = [];
   for (var j = i + 1; j < vertices.length; j++) {
-    if (i !== j && (vertices[j].z === vertices[i].z)) {
+    if (i !== j && (vertices[j].x === vertices[i].x)) {
       rowVertices.push({index: j, v: vertices[j]});
     }
-    if (i !== j && (vertices[j].z === minY)) {
+    if (i !== j && (vertices[j].x === minY)) {
       row2Vertices.push({index: j, v: vertices[j]});
     }
   }
@@ -150,9 +150,9 @@ for (var i = 0; i < vertices.length; i++) {
   if (rowVertices.length >= 1 && row2Vertices.length >= 2) {
     // find smallest x
     rowVertices.sort(function(a, b) {
-      if (a.v.x < b.v.x) {
+      if (a.v.z < b.v.z) {
         return -1;
-      } else if (a.v.x === b.v.x) {
+      } else if (a.v.z === b.v.z) {
         return 0;
       } else {
         return 1;
@@ -162,9 +162,9 @@ for (var i = 0; i < vertices.length; i++) {
     v1 = rowVertices[0].index;
     
     row2Vertices.sort(function(a, b) {
-      if (a.v.x < b.v.x) {
+      if (a.v.z < b.v.z) {
         return -1;
-      } else if (a.v.x === b.v.x) {
+      } else if (a.v.z === b.v.z) {
         return 0;
       } else {
         return 1;
@@ -181,8 +181,8 @@ for (var i = 0; i < vertices.length; i++) {
       else return 1;
     });
     
-    geometry.faces.push( new THREE.Face3(fv[0], fv[1], fv[3]));
-    geometry.faces.push( new THREE.Face3(fv[0], fv[3], fv[2]));
+    geometry.faces.push( new THREE.Face3(fv[1], fv[0], fv[3]));
+    geometry.faces.push( new THREE.Face3(fv[0], fv[2], fv[3]));
   }
 }
 
