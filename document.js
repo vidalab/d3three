@@ -1,7 +1,6 @@
-//var d3three = new D3THREE();
+var scatter = new D3THREE();
 
-d3three.init('canvas-scatter');
-d3three.animate();
+scatter.init('canvas-scatter');
 
 var x = d3.time.scale()
           .range([0, config.x]);
@@ -46,9 +45,9 @@ data.forEach(function(d) {
 
 z.domain([minZ, maxZ]);
 
-d3three.render(xAxis);
-d3three.render(yAxis);
-d3three.render(zAxis);
+scatter.render(xAxis);
+scatter.render(yAxis);
+scatter.render(zAxis);
 
 // convert data to 3D x, y, z
 var threeData = []
@@ -63,11 +62,19 @@ data.forEach(function(d) {
   }
 });
 
-var scatter = new D3THREE.Scatter();
-d3three.render(scatter, threeData);
+var scatterChart = new D3THREE.Scatter();
+scatter.render(scatterChart, threeData);
 
-var surface = new D3THREE.Surface();
-d3three.render(surface, threeData);
+var surface = new D3THREE();
+var surfaceChart = new D3THREE.Surface();
+surface.init('canvas-surface');
+surface.render(xAxis);
+surface.render(yAxis);
+surface.render(zAxis);
+surface.render(surfaceChart, threeData);
+
+// call animate loop
+d3three.animate();
 
 // Use sourceURL to enable debugging in Chrome
 //# sourceURL=document.js

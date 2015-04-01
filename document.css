@@ -7,10 +7,17 @@
 #canvas {
 }
 
-#canvas-svg {
+#canvas-scatter {
+  width: 600px;
+  height: 600px;
+  float: left;
+}
+
+#canvas-surface {
+  width: 600px;
+  height: 600px;
+  float: right;
 }
 
 body {
-  margin: 0px;
-  overflow: hidden;
 }

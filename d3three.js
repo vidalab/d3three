@@ -17,8 +17,13 @@ THREE.Object3D.prototype.setAttribute = function (name, value) {
     object[chain[chain.length - 1]] = value;
 }
 
-D3THREE = function() {
+var d3threes = [];
+D3THREE = function(singleton) {
   this.labelGroup = new THREE.Object3D();
+  
+  if (!singleton) {
+    d3threes.push(this);
+  }
 }
 
 D3THREE.prototype.init = function(divId) {
@@ -35,10 +40,15 @@ D3THREE.prototype.init = function(divId) {
   this.renderer.shadowMapWidth = 10000;
   this.renderer.shadowMapHeight = 10000;
   this.renderer.physicallyBasedShading = true;
-  this.renderer.setSize( window.innerWidth, window.innerHeight );
+  
+  var width = document.getElementById(divId).offsetWidth,
+      height = document.getElementById(divId).offsetHeight;
+  
+  this.renderer.setSize( width, height );
+  
   document.getElementById(divId).appendChild( this.renderer.domElement );
 
-  this.camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 1, 100000 );
+  this.camera = new THREE.PerspectiveCamera( 30, width / height, 1, 100000 );
   this.camera.position.z = -1000;
   this.camera.position.x = -800;
   this.camera.position.y = 600;
@@ -54,10 +64,10 @@ D3THREE.prototype.init = function(divId) {
 
   var self = this;
   var onWindowResize = function() {
-    self.camera.aspect = window.innerWidth / window.innerHeight;
+    self.camera.aspect = width / height;
     self.camera.updateProjectionMatrix();
 
-    self.renderer.setSize( window.innerWidth, window.innerHeight );
+    self.renderer.setSize( width, height );
   }
   
   window.addEventListener( 'resize', onWindowResize, false );
@@ -65,21 +75,25 @@ D3THREE.prototype.init = function(divId) {
 
 D3THREE.prototype.animate = function() {
   requestAnimationFrame( d3three.animate );
-  d3three.renderer.render( d3three.scene, d3three.camera );
-  d3three.controls.update();
   
-  d3three.labelGroup.children.forEach(function(l){
-    l.rotation.setFromRotationMatrix(d3three.camera.matrix, "YXZ");
-    l.rotation.x = 0;
-    l.rotation.z = 0;
-  });
+  for (var i = 0; i < d3threes.length; i++) {
+    var dt = d3threes[i];
+    dt.renderer.render( dt.scene, dt.camera );
+    dt.controls.update();
+  
+    dt.labelGroup.children.forEach(function(l){
+      l.rotation.setFromRotationMatrix(dt.camera.matrix, "YXZ");
+      l.rotation.x = 0;
+      l.rotation.z = 0;
+    });
+  }
 }
 
 D3THREE.prototype.render = function(element, data) {
   element.render(this, data);
 }
 
-d3three = new D3THREE();
+d3three = new D3THREE(true);
 
 D3THREE.Axis = function() {
   this._scale = d3.scale.linear();
