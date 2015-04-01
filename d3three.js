@@ -91,15 +91,16 @@ D3THREE.prototype.animate = function() {
 }
 
 D3THREE.prototype.render = function(element, data) {
-  element.render(this, data);
+  element.render(data);
 }
 
 d3three = new D3THREE(true);
 
-D3THREE.Axis = function() {
+D3THREE.Axis = function(dt) {
   this._scale = d3.scale.linear();
   this._orient = "x";
   this._tickFormat = function(d) { return d };
+  this._dt = dt;
 }
 
 D3THREE.Axis.prototype.orient = function(o) {
@@ -134,7 +135,7 @@ D3THREE.Axis.prototype.interval = function() {
   return interval;
 }
 
-D3THREE.Axis.prototype.render = function(dt) {
+D3THREE.Axis.prototype.render = function() {
   var material = new THREE.LineBasicMaterial({
     color: 0xbbbbbb,
     linewidth: 2
@@ -175,23 +176,23 @@ D3THREE.Axis.prototype.render = function(dt) {
       tickMarGeometry.vertices.push(new THREE.Vector3(i * interval, chartOffset, 0));
       tickMarGeometry.vertices.push(new THREE.Vector3(i * interval, -10 + chartOffset, 0));
       var tickLine = new THREE.Line(tickMarGeometry, tickMaterial);
-      dt.scene.add(tickLine);
+      this._dt.scene.add(tickLine);
       
-      if (i * interval > dt.maxY) {
-        dt.maxY = i * interval;
+      if (i * interval > this._dt.maxY) {
+        this._dt.maxY = i * interval;
       }
       
       words.position.set(i * interval, -20 + chartOffset, 0);
     } else if (this._orient === "z") {
       // tick
-      geometry.vertices.push(new THREE.Vector3(0 + dt.maxY, i * interval + chartOffset, 0));
+      geometry.vertices.push(new THREE.Vector3(0 + this._dt.maxY, i * interval + chartOffset, 0));
 
-      tickMarGeometry.vertices.push(new THREE.Vector3(0 + dt.maxY, i * interval + chartOffset, 0));
-      tickMarGeometry.vertices.push(new THREE.Vector3(10 + dt.maxY, i * interval + chartOffset, 0));
+      tickMarGeometry.vertices.push(new THREE.Vector3(0 + this._dt.maxY, i * interval + chartOffset, 0));
+      tickMarGeometry.vertices.push(new THREE.Vector3(10 + this._dt.maxY, i * interval + chartOffset, 0));
       var tickLine = new THREE.Line(tickMarGeometry, tickMaterial);
-      dt.scene.add(tickLine);
+      this._dt.scene.add(tickLine);
       
-      words.position.set(20 + dt.maxY, i * interval + chartOffset, 0);
+      words.position.set(20 + this._dt.maxY, i * interval + chartOffset, 0);
     } else if (this._orient === "x") {
       // tick
       geometry.vertices.push(new THREE.Vector3(0, chartOffset, i * interval));
@@ -199,35 +200,38 @@ D3THREE.Axis.prototype.render = function(dt) {
       tickMarGeometry.vertices.push(new THREE.Vector3(0, 0 + chartOffset, i * interval));
       tickMarGeometry.vertices.push(new THREE.Vector3(0, -10 + chartOffset, i * interval));
       var tickLine = new THREE.Line(tickMarGeometry, tickMaterial);
-      dt.scene.add(tickLine);
+      this._dt.scene.add(tickLine);
       
       words.position.set(0, -20 + chartOffset, i * interval);
     }
     
-    dt.labelGroup.add(words);
+    this._dt.labelGroup.add(words);
   }
   
   var line = new THREE.Line(geometry, material);
   
-  dt.scene.add(line);
+  this._dt.scene.add(line);
 }
 
-d3three.axis = function() {
-  return new D3THREE.Axis();
+d3three.axis = function(dt) {
+  return new D3THREE.Axis(dt);
 }
 
 // Scatter plot
-D3THREE.Scatter = function() {
-  
+D3THREE.Scatter = function(dt) {
+  this._dt = dt;
 }
 
-D3THREE.Scatter.prototype.render = function(dt, data) {
+D3THREE.Scatter.prototype.onDocumentMouseMove = function(e) {
+}
+
+D3THREE.Scatter.prototype.render = function(data) {
   var geometry = new THREE.SphereGeometry( 5, 32, 32 );
   var material = new THREE.MeshLambertMaterial( {
       color: 0x4682B4, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
 
   var chart3d = new THREE.Object3D();
-  dt.scene.add(chart3d);
+  this._dt.scene.add(chart3d);
 
   d3.select(chart3d)
         .selectAll()
@@ -245,10 +249,11 @@ D3THREE.Scatter.prototype.render = function(dt, data) {
 }
 
 // Surface plot
-D3THREE.Surface = function() {
+D3THREE.Surface = function(dt) {
+  this._dt = dt;
 }
 
-D3THREE.Surface.prototype.render = function(dt, threeData) {
+D3THREE.Surface.prototype.render = function(threeData) {
   /* custom surface */
   function distance (v1, v2)
   {
@@ -337,5 +342,5 @@ D3THREE.Surface.prototype.render = function(dt, threeData) {
   }
 
   var mesh = new THREE.Mesh( geometry, material );
-  dt.scene.add(mesh);
+  this._dt.scene.add(mesh);
 }

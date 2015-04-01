@@ -11,14 +11,14 @@ var y = d3.scale.ordinal()
 var z = d3.scale.linear()
           .range([0, config.z]);
 
-var xAxis = d3three.axis()
+var xAxis = d3three.axis(scatter)
                 .scale(x)
                 .orient("x")
                 .tickFormat(d3.time.format("%m-%d-%y"));
-var yAxis = d3three.axis()
+var yAxis = d3three.axis(scatter)
                 .scale(y)
                 .orient("y");
-var zAxis = d3three.axis()
+var zAxis = d3three.axis(scatter)
                 .scale(z)
                 .orient("z");
 
@@ -62,11 +62,23 @@ data.forEach(function(d) {
   }
 });
 
-var scatterChart = new D3THREE.Scatter();
+var scatterChart = new D3THREE.Scatter(scatter);
 scatter.render(scatterChart, threeData);
 
 var surface = new D3THREE();
-var surfaceChart = new D3THREE.Surface();
+
+var xAxis = d3three.axis(surface)
+                .scale(x)
+                .orient("x")
+                .tickFormat(d3.time.format("%m-%d-%y"));
+var yAxis = d3three.axis(surface)
+                .scale(y)
+                .orient("y");
+var zAxis = d3three.axis(surface)
+                .scale(z)
+                .orient("z");
+
+var surfaceChart = new D3THREE.Surface(surface);
 surface.init('canvas-surface');
 surface.render(xAxis);
 surface.render(yAxis);
