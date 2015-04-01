@@ -1,10 +1,27 @@
 var chartOffset = -200;
 
+// Override default functions for d3
+THREE.Object3D.prototype.appendChild = function (c) {
+  this.add(c);
+  return c;
+};
+THREE.Object3D.prototype.querySelectorAll = function () { return []; };
+
+// this one is to use D3's .attr() on THREE's objects
+THREE.Object3D.prototype.setAttribute = function (name, value) {
+    var chain = name.split('.');
+    var object = this;
+    for (var i = 0; i < chain.length - 1; i++) {
+        object = object[chain[i]];
+    }
+    object[chain[chain.length - 1]] = value;
+}
+
 D3THREE = function() {
   this.labelGroup = new THREE.Object3D();
 }
 
-D3THREE.prototype.init = function() {
+D3THREE.prototype.init = function(divId) {
   // standard THREE stuff, straight from examples
   this.renderer = new THREE.WebGLRenderer({antialias: true, alpha : true});
   this.renderer.shadowMapEnabled = true;
@@ -12,14 +29,14 @@ D3THREE.prototype.init = function() {
   this.renderer.shadowMapSoft = true;
   this.renderer.shadowCameraNear = 1000;
   this.renderer.shadowCameraFar = 10000;
-  //this.renderer.shadowCameraFov = 50;
+  this.renderer.shadowCameraFov = 50;
   this.renderer.shadowMapBias = 0.0039;
   this.renderer.shadowMapDarkness = 0.25;
   this.renderer.shadowMapWidth = 10000;
   this.renderer.shadowMapHeight = 10000;
   this.renderer.physicallyBasedShading = true;
   this.renderer.setSize( window.innerWidth, window.innerHeight );
-  document.getElementById('canvas-svg').appendChild( this.renderer.domElement );
+  document.getElementById(divId).appendChild( this.renderer.domElement );
 
   this.camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 1, 100000 );
   this.camera.position.z = -1000;
@@ -35,7 +52,14 @@ D3THREE.prototype.init = function() {
     
   this.scene.add(this.labelGroup);
 
-  // continue with THREE stuff
+  var self = this;
+  var onWindowResize = function() {
+    self.camera.aspect = window.innerWidth / window.innerHeight;
+    self.camera.updateProjectionMatrix();
+
+    self.renderer.setSize( window.innerWidth, window.innerHeight );
+  }
+  
   window.addEventListener( 'resize', onWindowResize, false );
 }
 
@@ -51,8 +75,8 @@ D3THREE.prototype.animate = function() {
   });
 }
 
-D3THREE.prototype.render = function(element) {
-  element.render(this);
+D3THREE.prototype.render = function(element, data) {
+  element.render(this, data);
 }
 
 d3three = new D3THREE();
@@ -173,9 +197,126 @@ d3three.axis = function() {
   return new D3THREE.Axis();
 }
 
-onWindowResize = function() {
-  d3three.camera.aspect = window.innerWidth / window.innerHeight;
-  d3three.camera.updateProjectionMatrix();
+// Scatter plot
+D3THREE.Scatter = function() {
+  
+}
 
-  d3three.renderer.setSize( window.innerWidth, window.innerHeight );
+D3THREE.Scatter.prototype.render = function(dt, data) {
+  var geometry = new THREE.SphereGeometry( 5, 32, 32 );
+  var material = new THREE.MeshLambertMaterial( {
+      color: 0x4682B4, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
+
+  var chart3d = new THREE.Object3D();
+  dt.scene.add(chart3d);
+
+  d3.select(chart3d)
+        .selectAll()
+        .data(data)
+    .enter().append( function() { return new THREE.Mesh( geometry, material ); } )
+        .attr("position.z", function(d) {
+          return x(d.x);
+        })
+        .attr("position.x", function(d) {
+          return y(d.y);
+        })
+        .attr("position.y", function(d) {
+          return z(d.z) + chartOffset;
+        });
+}
+
+// Surface plot
+D3THREE.Surface = function() {
+}
+
+D3THREE.Surface.prototype.render = function(dt, threeData) {
+  /* custom surface */
+  function distance (v1, v2)
+  {
+    var dx = v1.x - v2.x;
+    var dy = v1.y - v2.y;
+    var dz = v1.z - v2.z;
+
+    return Math.sqrt(dx*dx+dz*dz);
+  }
+
+  var vertices = [];
+  var holes = [];
+  var triangles, mesh;
+  var geometry = new THREE.Geometry();
+  var material = new THREE.MeshBasicMaterial({color: 0x4682B4});
+
+  for (var i = 0; i < threeData.length; i++) {
+    vertices.push(new THREE.Vector3(y(threeData[i].y),
+      z(threeData[i].z) + chartOffset, x(threeData[i].x)));
+  }
+
+  geometry.vertices = vertices;
+
+  for (var i = 0; i < vertices.length; i++) {
+    // find three closest vertices to generate surface
+    var v1, v2, v3;
+    var distances = [];
+  
+    // find vertices in same y or y + 1 row
+    var minY = Number.MAX_VALUE;
+    for (var j = i + 1; j < vertices.length; j++) {
+      if (i !== j && vertices[j].x > vertices[i].x) {
+        if (vertices[j].x < minY) {
+          minY = vertices[j].x;
+        }
+      }
+    }
+  
+    var rowVertices = [], row2Vertices = [];
+    for (var j = i + 1; j < vertices.length; j++) {
+      if (i !== j && (vertices[j].x === vertices[i].x)) {
+        rowVertices.push({index: j, v: vertices[j]});
+      }
+      if (i !== j && (vertices[j].x === minY)) {
+        row2Vertices.push({index: j, v: vertices[j]});
+      }
+    }
+  
+    if (rowVertices.length >= 1 && row2Vertices.length >= 2) {
+      // find smallest x
+      rowVertices.sort(function(a, b) {
+        if (a.v.z < b.v.z) {
+          return -1;
+        } else if (a.v.z === b.v.z) {
+          return 0;
+        } else {
+          return 1;
+        }
+      });
+    
+      v1 = rowVertices[0].index;
+    
+      row2Vertices.sort(function(a, b) {
+        if (a.v.z < b.v.z) {
+          return -1;
+        } else if (a.v.z === b.v.z) {
+          return 0;
+        } else {
+          return 1;
+        }
+      });
+    
+      v2 = row2Vertices[0].index;
+      v3 = row2Vertices[1].index;
+    
+      var fv = [i, v1, v2, v3];
+      fv = fv.sort(function(a, b) {
+        if (a < b) return -1;
+        else if (a === b) return 0;
+        else return 1;
+      });
+    
+      geometry.faces.push( new THREE.Face3(fv[1], fv[0], fv[3]));
+      geometry.faces.push( new THREE.Face3(fv[0], fv[2], fv[3]));
+    }
+  }
+
+  var mesh = new THREE.Mesh( geometry, material );
+  dt.scene.add(mesh);
 }
