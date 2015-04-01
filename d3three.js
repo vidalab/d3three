@@ -20,6 +20,7 @@ THREE.Object3D.prototype.setAttribute = function (name, value) {
 var d3threes = [];
 D3THREE = function(singleton) {
   this.labelGroup = new THREE.Object3D();
+  this.maxY = 0;
   
   if (!singleton) {
     d3threes.push(this);
@@ -167,7 +168,7 @@ D3THREE.Axis.prototype.render = function(dt) {
     var wrapper = new THREE.MeshBasicMaterial({color: 0xbbbbbb});
     var words = new THREE.Mesh(shape, wrapper);
     
-    if (this._orient === "x") {
+    if (this._orient === "y") {
       // tick
       geometry.vertices.push(new THREE.Vector3(i * interval, chartOffset, 0));
       
@@ -176,18 +177,22 @@ D3THREE.Axis.prototype.render = function(dt) {
       var tickLine = new THREE.Line(tickMarGeometry, tickMaterial);
       dt.scene.add(tickLine);
       
+      if (i * interval > dt.maxY) {
+        dt.maxY = i * interval;
+      }
+      
       words.position.set(i * interval, -20 + chartOffset, 0);
-    } else if (this._orient === "y") {
+    } else if (this._orient === "z") {
       // tick
-      geometry.vertices.push(new THREE.Vector3(0, i * interval + chartOffset, 0));
+      geometry.vertices.push(new THREE.Vector3(0 + dt.maxY, i * interval + chartOffset, 0));
 
-      tickMarGeometry.vertices.push(new THREE.Vector3(0, i * interval + chartOffset, 0));
-      tickMarGeometry.vertices.push(new THREE.Vector3(-10, i * interval + chartOffset, 0));
+      tickMarGeometry.vertices.push(new THREE.Vector3(0 + dt.maxY, i * interval + chartOffset, 0));
+      tickMarGeometry.vertices.push(new THREE.Vector3(10 + dt.maxY, i * interval + chartOffset, 0));
       var tickLine = new THREE.Line(tickMarGeometry, tickMaterial);
       dt.scene.add(tickLine);
       
-      words.position.set(-20, i * interval + chartOffset, 0);
-    } else if (this._orient === "z") {
+      words.position.set(20 + dt.maxY, i * interval + chartOffset, 0);
+    } else if (this._orient === "x") {
       // tick
       geometry.vertices.push(new THREE.Vector3(0, chartOffset, i * interval));
       

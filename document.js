@@ -13,14 +13,14 @@ var z = d3.scale.linear()
 
 var xAxis = d3three.axis()
                 .scale(x)
-                .orient("z")
+                .orient("x")
                 .tickFormat(d3.time.format("%m-%d-%y"));
 var yAxis = d3three.axis()
                 .scale(y)
-                .orient("x");
+                .orient("y");
 var zAxis = d3three.axis()
                 .scale(z)
-                .orient("y");
+                .orient("z");
 
 x.domain(d3.extent(data, function(d) { return d3.time.format("%m/%d/%y").parse(d.Date); }));
 
