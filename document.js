@@ -65,23 +65,6 @@ d3three.render(xAxis);
 d3three.render(yAxis);
 d3three.render(zAxis);
 
-/*var barData = [4, 8, 15, 16, 23, 42];
-
-var geometry = new THREE.CubeGeometry( 20, 20, 20 );
-var material = new THREE.MeshLambertMaterial( {
-    color: 0x4682B4, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
-
-var chart3d = new THREE.Object3D();
-d3three.scene.add(chart3d);
-
-d3.select(chart3d)
-      .selectAll()
-      .data(barData)
-  .enter().append( function() { return new THREE.Mesh( geometry, material ); } )
-      .attr("position.x", function(d, i) { return 30 * i; })
-      .attr("position.y", function(d, i) { return d; })
-      .attr("scale.y", function(d, i) { return d / 10; });*/
-
 // convert data to 3D x, y, z
 var threeData = []
 data.forEach(function(d) {
@@ -202,26 +185,8 @@ for (var i = 0; i < vertices.length; i++) {
   }
 }
 
-//console.log(threeData);
-//console.log(vertices);
-
-/*geometry.vertices = vertices;
-
-triangles = THREE.Shape.Utils.triangulateShape ( vertices, holes );
-
-for( var i = 0; i < triangles.length; i++ ){
-
-    geometry.faces.push( new THREE.Face3( triangles[i][0], triangles[i][1], triangles[i][2] ));
-
-}*/
-
 mesh = new THREE.Mesh( geometry, material );
 d3three.scene.add(mesh);
-
-/* custom surface */
-
-
-
 
 // Use sourceURL to enable debugging in Chrome
 //# sourceURL=document.js
