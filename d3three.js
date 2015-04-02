@@ -223,7 +223,10 @@ D3THREE.Scatter = function(dt) {
   this._nodeGroup = new THREE.Object3D();
   
   // mouse move
-  this._dt.renderer.domElement.addEventListener( 'mousemove', this.onDocumentMouseMove, false );
+  var self = this;
+  this._dt.renderer.domElement.addEventListener( 'mousemove', function(e) {
+    self.onDocumentMouseMove(e);
+  }, false );
 }
 
 D3THREE.Scatter.prototype.onDocumentMouseMove = function(e) {
@@ -231,30 +234,37 @@ D3THREE.Scatter.prototype.onDocumentMouseMove = function(e) {
   var vector = new THREE.Vector3();
   vector.x = ( e.clientX / this._dt.width ) * 2 - 1;
   vector.y = 1 - ( e.clientY / this._dt.height ) * 2;
-  vector.z = 0.5;
+  vector.z = 1;
   
   // create a check ray
-  var projector = new THREE.Projector();
-	projector.unprojectVector( vector, this._dt.camera );
+	vector.unproject( this._dt.camera );
   var ray = new THREE.Raycaster( this._dt.camera.position,
     vector.sub( this._dt.camera.position ).normalize() );
   
+  var intersects = ray.intersectObjects( this._nodeGroup.children );
   
+  for (var i = 0; i < this._nodeGroup.children.length; i++) {
+    this._nodeGroup.children[i].material.opacity = 1;
+  }
+  
+  if (intersects.length > 0) {
+    console.log(intersects);
+    intersects[0].object.material.opacity = 0.5;
+  }
 }
 
 D3THREE.Scatter.prototype.render = function(data) {
   var geometry = new THREE.SphereGeometry( 5, 32, 32 );
-  var material = new THREE.MeshLambertMaterial( {
-      color: 0x4682B4, shading: THREE.FlatShading, vertexColors: THREE.VertexColors } );
 
   this._dt.scene.add(this._nodeGroup);
   
-  var self = this;
-
   d3.select(this._nodeGroup)
         .selectAll()
         .data(data)
     .enter().append( function() {
+      var material = new THREE.MeshLambertMaterial( {
+          color: 0x4682B4, shading: THREE.FlatShading,
+          vertexColors: THREE.VertexColors } );
       var mesh = new THREE.Mesh( geometry, material );
       return mesh;
     } )
