@@ -22,3 +22,22 @@
 body {
   margin: 0px;
 }
+
+#tooltip-container {
+  position: absolute;
+  background-color: #aaa;
+  color: #fff;
+  opacity: 0.9;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border: 1px solid;
+  display: none;
+  font-family: "Arial";
+  font-size: 12px;
+}
+
+.tooltip_key {
+  font-weight: bold;
+}

@@ -21,6 +21,7 @@ var d3threes = [];
 D3THREE = function(singleton) {
   this.labelGroup = new THREE.Object3D();
   this.maxY = 0;
+  this.axisObjects = {};
   
   if (!singleton) {
     d3threes.push(this);
@@ -157,6 +158,9 @@ D3THREE.Axis.prototype.render = function() {
     interval = this._scale.range()[1] / this._scale.ticks().length;
     ticks = this._scale.ticks();
   }
+  
+  this._dt.axisObjects[this._orient] = this;
+  
   for (var i = 0; i < ticks.length; i++) {
     var tickMarGeometry = new THREE.Geometry();
     
@@ -248,8 +252,30 @@ D3THREE.Scatter.prototype.onDocumentMouseMove = function(e) {
   }
   
   if (intersects.length > 0) {
-    console.log(intersects);
-    intersects[0].object.material.opacity = 0.5;
+    var obj = intersects[0].object;
+    obj.material.opacity = 0.5;
+    
+    var html = "";
+
+    html += "<div class=\"tooltip_kv\">";
+    html += "<span>";
+    html += "x: " + this._dt.axisObjects.x._tickFormat(obj.userData.x);
+    html += "</span><br>";
+    html += "<span>";
+    html += "y: " + this._dt.axisObjects.y._tickFormat(obj.userData.y);
+    html += "</span><br>";
+    html += "<span>";
+    html += "z: " + this._dt.axisObjects.z._tickFormat(obj.userData.z);
+    html += "</span><br>";
+    html += "</div>";
+
+    document.getElementById("tooltip-container").innerHTML = html;
+    document.getElementById("tooltip-container").style.display = "block";
+
+    document.getElementById("tooltip-container").style.top = (e.clientY + 10) + "px";
+    document.getElementById("tooltip-container").style.left = (e.clientX + 10) + "px";
+  } else {
+    document.getElementById("tooltip-container").style.display = "none";
   }
 }
 
@@ -261,11 +287,12 @@ D3THREE.Scatter.prototype.render = function(data) {
   d3.select(this._nodeGroup)
         .selectAll()
         .data(data)
-    .enter().append( function() {
+    .enter().append( function(d) {
       var material = new THREE.MeshLambertMaterial( {
           color: 0x4682B4, shading: THREE.FlatShading,
           vertexColors: THREE.VertexColors } );
       var mesh = new THREE.Mesh( geometry, material );
+      mesh.userData = {x: d.x, y: d.y, z: d.z};
       return mesh;
     } )
         .attr("position.z", function(d) {
