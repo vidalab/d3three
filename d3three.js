@@ -43,6 +43,7 @@ D3THREE.prototype.init = function(divId) {
   this.renderer.shadowMapHeight = 10000;
   this.renderer.physicallyBasedShading = true;
   
+  this.divId = divId;
   this.width = document.getElementById(divId).offsetWidth;
   this.height = document.getElementById(divId).offsetHeight;
   
@@ -236,8 +237,8 @@ D3THREE.Scatter = function(dt) {
 D3THREE.Scatter.prototype.onDocumentMouseMove = function(e) {
   // detect intersected spheres
   var vector = new THREE.Vector3();
-  vector.x = ( e.clientX / this._dt.width ) * 2 - 1;
-  vector.y = 1 - ( e.clientY / this._dt.height ) * 2;
+  vector.x = ( (e.clientX - this._dt.renderer.domElement.offsetLeft) / this._dt.renderer.domElement.width ) * 2 - 1;
+  vector.y = 1 - ( (e.clientY - this._dt.renderer.domElement.offsetTop) / this._dt.renderer.domElement.height ) * 2;
   vector.z = 1;
   
   // create a check ray
@@ -309,9 +310,89 @@ D3THREE.Scatter.prototype.render = function(data) {
 // Surface plot
 D3THREE.Surface = function(dt) {
   this._dt = dt;
+  
+  this._nodeGroup = new THREE.Object3D();
+  
+  // mouse move
+  var self = this;
+  this._dt.renderer.domElement.addEventListener( 'mousemove', function(e) {
+    self.onDocumentMouseMove(e);
+  }, false );
+}
+
+D3THREE.Surface.prototype.onDocumentMouseMove = function(e) {
+  // detect intersected spheres
+  var vector = new THREE.Vector3();
+  vector.x = ( (e.clientX - this._dt.renderer.domElement.offsetLeft) / this._dt.renderer.domElement.width ) * 2 - 1;
+  vector.y = 1 - ( (e.clientY - this._dt.renderer.domElement.offsetTop) / this._dt.renderer.domElement.height ) * 2;
+  vector.z = 1;
+  
+  // create a check ray
+	vector.unproject( this._dt.camera );
+  var ray = new THREE.Raycaster( this._dt.camera.position,
+    vector.sub( this._dt.camera.position ).normalize() );
+  
+  var intersects = ray.intersectObjects( this._nodeGroup.children );
+  
+  for (var i = 0; i < this._nodeGroup.children.length; i++) {
+    this._nodeGroup.children[i].material.opacity = 1;
+  }
+  
+  if (intersects.length > 0) {
+    var obj = intersects[0].object;
+    obj.material.opacity = 0.5;
+    
+    var html = "";
+
+    html += "<div class=\"tooltip_kv\">";
+    html += "<span>";
+    html += "x: " + this._dt.axisObjects.x._tickFormat(obj.userData.x);
+    html += "</span><br>";
+    html += "<span>";
+    html += "y: " + this._dt.axisObjects.y._tickFormat(obj.userData.y);
+    html += "</span><br>";
+    html += "<span>";
+    html += "z: " + this._dt.axisObjects.z._tickFormat(obj.userData.z);
+    html += "</span><br>";
+    html += "</div>";
+
+    document.getElementById("tooltip-container").innerHTML = html;
+    document.getElementById("tooltip-container").style.display = "block";
+
+    document.getElementById("tooltip-container").style.top = (e.clientY + 10) + "px";
+    document.getElementById("tooltip-container").style.left = (e.clientX + 10) + "px";
+  } else {
+    document.getElementById("tooltip-container").style.display = "none";
+  }
 }
 
 D3THREE.Surface.prototype.render = function(threeData) {
+  /* render data points */
+  var geometry = new THREE.SphereGeometry( 5, 32, 32 );
+
+  this._dt.scene.add(this._nodeGroup);
+  
+  d3.select(this._nodeGroup)
+        .selectAll()
+        .data(threeData)
+    .enter().append( function(d) {
+      var material = new THREE.MeshLambertMaterial( {
+          color: 0x4682B4, shading: THREE.FlatShading,
+          vertexColors: THREE.VertexColors } );
+      var mesh = new THREE.Mesh( geometry, material );
+      mesh.userData = {x: d.x, y: d.y, z: d.z};
+      return mesh;
+    } )
+        .attr("position.z", function(d) {
+          return x(d.x);
+        })
+        .attr("position.x", function(d) {
+          return y(d.y);
+        })
+        .attr("position.y", function(d) {
+          return z(d.z) + chartOffset;
+        });
+  
   /* custom surface */
   function distance (v1, v2)
   {

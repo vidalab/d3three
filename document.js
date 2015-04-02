@@ -66,6 +66,7 @@ var scatterChart = new D3THREE.Scatter(scatter);
 scatter.render(scatterChart, threeData);
 
 var surface = new D3THREE();
+surface.init('canvas-surface');
 
 var xAxis = d3three.axis(surface)
                 .scale(x)
@@ -79,7 +80,6 @@ var zAxis = d3three.axis(surface)
                 .orient("z");
 
 var surfaceChart = new D3THREE.Surface(surface);
-surface.init('canvas-surface');
 surface.render(xAxis);
 surface.render(yAxis);
 surface.render(zAxis);
