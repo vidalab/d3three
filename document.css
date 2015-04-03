@@ -25,7 +25,7 @@ body {
 
 #tooltip-container {
   position: absolute;
-  background-color: #aaa;
+  background-color: #404040;
   color: #fff;
   opacity: 0.9;
   padding-left: 10px;

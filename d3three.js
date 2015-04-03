@@ -18,6 +18,8 @@ THREE.Object3D.prototype.setAttribute = function (name, value) {
 }
 
 var d3threes = [];
+
+// d3three object
 D3THREE = function(singleton) {
   this.labelGroup = new THREE.Object3D();
   this.maxY = 0;
@@ -98,6 +100,7 @@ D3THREE.prototype.render = function(element, data) {
 
 d3three = new D3THREE(true);
 
+// d3three axis
 D3THREE.Axis = function(dt) {
   this._scale = d3.scale.linear();
   this._orient = "x";
@@ -222,17 +225,33 @@ d3three.axis = function(dt) {
   return new D3THREE.Axis(dt);
 }
 
-// Scatter plot
-D3THREE.Scatter = function(dt) {
+// Chart object
+D3THREE.Chart = function() {
+}
+
+D3THREE.Chart.prototype.config = function(c) {
+  this._config = $.extend(this._config, c);
+}
+
+D3THREE.Chart.prototype.init = function(dt) {
   this._dt = dt;
-  this._nodeGroup = new THREE.Object3D();
-  
   // mouse move
   var self = this;
   this._dt.renderer.domElement.addEventListener( 'mousemove', function(e) {
     self.onDocumentMouseMove(e);
   }, false );
 }
+
+// Scatter plot
+D3THREE.Scatter = function(dt) {  
+  this.init(dt);
+  
+  this._nodeGroup = new THREE.Object3D();
+  
+  this._config = {color: 0x4682B4, pointRadius: 5};
+}
+
+D3THREE.Scatter.prototype = new D3THREE.Chart();
 
 D3THREE.Scatter.prototype.onDocumentMouseMove = function(e) {
   // detect intersected spheres
@@ -281,17 +300,17 @@ D3THREE.Scatter.prototype.onDocumentMouseMove = function(e) {
 }
 
 D3THREE.Scatter.prototype.render = function(data) {
-  var geometry = new THREE.SphereGeometry( 5, 32, 32 );
+  var geometry = new THREE.SphereGeometry( this._config.pointRadius, 32, 32 );
 
   this._dt.scene.add(this._nodeGroup);
   
+  var self = this;
   d3.select(this._nodeGroup)
         .selectAll()
         .data(data)
     .enter().append( function(d) {
-      var material = new THREE.MeshLambertMaterial( {
-          color: 0x4682B4, shading: THREE.FlatShading,
-          vertexColors: THREE.VertexColors } );
+      var material = new THREE.MeshBasicMaterial( {
+        color: self._config.color } );
       var mesh = new THREE.Mesh( geometry, material );
       mesh.userData = {x: d.x, y: d.y, z: d.z};
       return mesh;
@@ -308,17 +327,15 @@ D3THREE.Scatter.prototype.render = function(data) {
 }
 
 // Surface plot
-D3THREE.Surface = function(dt) {
-  this._dt = dt;
+D3THREE.Surface = function(dt) {  
+  this.init(dt);
   
   this._nodeGroup = new THREE.Object3D();
   
-  // mouse move
-  var self = this;
-  this._dt.renderer.domElement.addEventListener( 'mousemove', function(e) {
-    self.onDocumentMouseMove(e);
-  }, false );
+  this._config = {color: 0x4682B4, pointColor: 0xff7f0e, pointRadius: 2};
 }
+
+D3THREE.Surface.prototype = new D3THREE.Chart();
 
 D3THREE.Surface.prototype.onDocumentMouseMove = function(e) {
   // detect intersected spheres
@@ -378,17 +395,17 @@ D3THREE.Surface.prototype.onDocumentMouseMove = function(e) {
 
 D3THREE.Surface.prototype.render = function(threeData) {
   /* render data points */
-  var geometry = new THREE.SphereGeometry( 5, 32, 32 );
+  var geometry = new THREE.SphereGeometry( this._config.pointRadius, 32, 32 );
 
   this._dt.scene.add(this._nodeGroup);
   
+  var self = this;
   d3.select(this._nodeGroup)
         .selectAll()
         .data(threeData)
     .enter().append( function(d) {
-      var material = new THREE.MeshLambertMaterial( {
-          color: 0x4682B4, shading: THREE.FlatShading,
-          vertexColors: THREE.VertexColors } );
+      var material = new THREE.MeshBasicMaterial( {
+        color: self._config.pointColor } );
       var mesh = new THREE.Mesh( geometry, material );
       mesh.userData = {x: d.x, y: d.y, z: d.z};
       mesh.visible = false;
@@ -418,7 +435,7 @@ D3THREE.Surface.prototype.render = function(threeData) {
   var holes = [];
   var triangles, mesh;
   var geometry = new THREE.Geometry();
-  var material = new THREE.MeshBasicMaterial({color: 0x4682B4});
+  var material = new THREE.MeshBasicMaterial({color: this._config.color});
 
   for (var i = 0; i < threeData.length; i++) {
     vertices.push(new THREE.Vector3(y(threeData[i].y),
