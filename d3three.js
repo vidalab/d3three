@@ -58,7 +58,7 @@ D3THREE.prototype.init = function(divId) {
   this.camera.position.x = -800;
   this.camera.position.y = 600;
 
-  this.controls = new THREE.OrbitControls( this.camera );
+  this.controls = new THREE.OrbitControls( this.camera, this.renderer.domElement );
 
   this.scene = new THREE.Scene();
 
