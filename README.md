@@ -1,43 +1,14 @@
-Document Template for vida.io
+3D data visualization with d3.js and three.js
 =============
 
-Github template for vida.io
+d3three is a JavaScript library for 3D data visualization. It makes use of d3.js scales, axis, binding, layout. 3D Drawing is done with three.js
 
-Python is required to run locally: sh ./run_server.sh
+d3three includes charts.
 
-Describe your document in manifest.json. Format is as follows:
+### Scatter ###
 
-    {
-      "data": ["document.json"],
-      "javascript": ["document.js"],
-      "stylesheet": ["document.css"],
-      "html": ["document.html"],
-      "properties": [
-        {"label":"Data Column 0 (X Axis)","name":"data0","type":"data_column","value":null},
-        {"label":"Data Column 1 (Y Axis)","name":"data1","type":"data_column","value":null},
-        {"label":"Label 0","name":"label0","type":"string","value":"label 0"},
-        {"label":"Label 1","name":"label1","type":"string","value":"label 1"},
-        {"label":"Color 0","name":"color0","type":"color","value":"#0f608b"},
-        {"label":"Color 1","name":"color1","type":"color","value":"#99ccff"},
-        {"label":"Width","name":"width","type":"number","value":800},
-        {"label":"Height","name":"height","type":"number","value":400}
-      ]
-    }
-    
-    data: list of data files for your document
-    javascript: list of javascript files for your document
-    stylesheet: list of stylesheet files for your document
-    html: list of html files for your document
-    properties: external properties for vida.io user interface
-    properties.label: property label
-    properties.name: property name
-    properties.type: property type (string/number/boolean/color/data_column)
-    properties.value: default property value
+### Surface ###
 
-Use sourceURL to enable debugging in Chrome:
-
-    //# sourceURL=document.js
-
-Copyright Vida Lab Inc. 2014
+Copyright Vida Lab Inc. 2014-2015
 
 License: BSD
