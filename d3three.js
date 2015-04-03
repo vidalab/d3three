@@ -316,13 +316,13 @@ D3THREE.Scatter.prototype.render = function(data) {
       return mesh;
     } )
         .attr("position.z", function(d) {
-          return x(d.x);
+          return self._dt.axisObjects.x._scale(d.x);
         })
         .attr("position.x", function(d) {
-          return y(d.y);
+          return self._dt.axisObjects.y._scale(d.y);
         })
         .attr("position.y", function(d) {
-          return z(d.z) + chartOffset;
+          return self._dt.axisObjects.z._scale(d.z) + chartOffset;
         });
 }
 
@@ -412,13 +412,13 @@ D3THREE.Surface.prototype.render = function(threeData) {
       return mesh;
     } )
         .attr("position.z", function(d) {
-          return x(d.x);
+          return self._dt.axisObjects.x._scale(d.x);
         })
         .attr("position.x", function(d) {
-          return y(d.y);
+          return self._dt.axisObjects.y._scale(d.y);
         })
         .attr("position.y", function(d) {
-          return z(d.z) + chartOffset;
+          return self._dt.axisObjects.z._scale(d.z) + chartOffset;
         });
   
   /* custom surface */
@@ -438,8 +438,9 @@ D3THREE.Surface.prototype.render = function(threeData) {
   var material = new THREE.MeshBasicMaterial({color: this._config.color});
 
   for (var i = 0; i < threeData.length; i++) {
-    vertices.push(new THREE.Vector3(y(threeData[i].y),
-      z(threeData[i].z) + chartOffset, x(threeData[i].x)));
+    vertices.push(new THREE.Vector3(self._dt.axisObjects.y._scale(threeData[i].y),
+      self._dt.axisObjects.z._scale(threeData[i].z) + chartOffset,
+      self._dt.axisObjects.x._scale(threeData[i].x)));
   }
 
   geometry.vertices = vertices;
