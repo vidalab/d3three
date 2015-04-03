@@ -1,7 +1,9 @@
 3D data visualization with d3.js and three.js
 =============
 
-d3three is a JavaScript library for 3D data visualization. It makes use of d3.js scales, axis, binding, layout. 3D Drawing is done with three.js
+d3three is a JavaScript library for 3D data visualization. It makes use of d3.js scales, axis, binding, layout. 3D Drawing is done with three.js.
+
+For documentation, [see the wiki page](https://github.com/vidalab/d3three/wiki).
 
 d3three includes charts.
 
