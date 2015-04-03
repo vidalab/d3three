@@ -1,4 +1,4 @@
-var chartOffset = -200;
+var chartOffset = -0;
 
 // Override default functions for d3
 THREE.Object3D.prototype.appendChild = function (c) {
@@ -110,6 +110,7 @@ D3THREE.Axis = function(dt) {
 
 D3THREE.Axis.prototype.orient = function(o) {
   if (o) {
+    this._dt.axisObjects[o] = this;
     this._orient = o;
   }
   return this;
@@ -135,9 +136,24 @@ D3THREE.Axis.prototype.interval = function() {
     // ordinal scale
     interval = this._scale.range()[1];
   } else {
-    interval = this._scale.range()[1] / this._scale.ticks().length;
+    interval = this._scale.range()[1] / (this._scale.ticks().length - 1);
   }
   return interval;
+}
+
+D3THREE.Axis.prototype.ticks = function() {
+  var ticks;
+  if (typeof(this._scale.rangeBand) === 'function') {
+    // ordinal scale
+    ticks = this._scale.domain();
+  } else {
+    ticks = this._scale.ticks();
+  }
+  return ticks;
+}
+
+D3THREE.Axis.prototype.getRotationShift = function() {
+  return this.interval() * (this.ticks().length - 1) / 2;
 }
 
 D3THREE.Axis.prototype.render = function() {
@@ -153,17 +169,13 @@ D3THREE.Axis.prototype.render = function() {
   
   var geometry = new THREE.Geometry();
   
-  var interval, ticks;
-  if (typeof(this._scale.rangeBand) === 'function') {
-    // ordinal scale
-    interval = this._scale.range()[1];
-    ticks = this._scale.domain();
-  } else {
-    interval = this._scale.range()[1] / (this._scale.ticks().length - 1);
-    ticks = this._scale.ticks();
-  }
+  interval = this.interval();
   
-  this._dt.axisObjects[this._orient] = this;
+  var interval = this.interval(), ticks = this.ticks();
+  
+  // x,y axis shift, so rotation is from center of screen
+  var xAxisShift = this._dt.axisObjects.x.getRotationShift(),
+      yAxisShift = this._dt.axisObjects.y.getRotationShift();
   
   for (var i = 0; i < ticks.length; i++) {
     var tickMarGeometry = new THREE.Geometry();
@@ -179,10 +191,10 @@ D3THREE.Axis.prototype.render = function() {
     
     if (this._orient === "y") {
       // tick
-      geometry.vertices.push(new THREE.Vector3(i * interval, chartOffset, 0));
+      geometry.vertices.push(new THREE.Vector3(i * interval - yAxisShift, chartOffset, 0 - xAxisShift));
       
-      tickMarGeometry.vertices.push(new THREE.Vector3(i * interval, chartOffset, 0));
-      tickMarGeometry.vertices.push(new THREE.Vector3(i * interval, -10 + chartOffset, 0));
+      tickMarGeometry.vertices.push(new THREE.Vector3(i * interval - yAxisShift, chartOffset, 0 - xAxisShift));
+      tickMarGeometry.vertices.push(new THREE.Vector3(i * interval - yAxisShift, -10 + chartOffset, 0 - xAxisShift));
       var tickLine = new THREE.Line(tickMarGeometry, tickMaterial);
       this._dt.scene.add(tickLine);
       
@@ -190,27 +202,27 @@ D3THREE.Axis.prototype.render = function() {
         this._dt.maxY = i * interval;
       }
       
-      words.position.set(i * interval, -20 + chartOffset, 0);
+      words.position.set(i * interval - yAxisShift, -20 + chartOffset, 0 - xAxisShift);
     } else if (this._orient === "z") {
       // tick
-      geometry.vertices.push(new THREE.Vector3(0 + this._dt.maxY, i * interval + chartOffset, 0));
+      geometry.vertices.push(new THREE.Vector3(0 + this._dt.maxY - yAxisShift, i * interval + chartOffset, 0 - xAxisShift));
 
-      tickMarGeometry.vertices.push(new THREE.Vector3(0 + this._dt.maxY, i * interval + chartOffset, 0));
-      tickMarGeometry.vertices.push(new THREE.Vector3(10 + this._dt.maxY, i * interval + chartOffset, 0));
+      tickMarGeometry.vertices.push(new THREE.Vector3(0 + this._dt.maxY - yAxisShift, i * interval + chartOffset, 0 - xAxisShift));
+      tickMarGeometry.vertices.push(new THREE.Vector3(10 + this._dt.maxY - yAxisShift, i * interval + chartOffset, 0 - xAxisShift));
       var tickLine = new THREE.Line(tickMarGeometry, tickMaterial);
       this._dt.scene.add(tickLine);
       
-      words.position.set(20 + this._dt.maxY, i * interval + chartOffset, 0);
+      words.position.set(20 + this._dt.maxY - yAxisShift, i * interval + chartOffset, 0 - xAxisShift);
     } else if (this._orient === "x") {
       // tick
-      geometry.vertices.push(new THREE.Vector3(0, chartOffset, i * interval));
+      geometry.vertices.push(new THREE.Vector3(0 - yAxisShift, chartOffset, i * interval - xAxisShift));
       
-      tickMarGeometry.vertices.push(new THREE.Vector3(0, 0 + chartOffset, i * interval));
-      tickMarGeometry.vertices.push(new THREE.Vector3(0, -10 + chartOffset, i * interval));
+      tickMarGeometry.vertices.push(new THREE.Vector3(0 - yAxisShift, 0 + chartOffset, i * interval - xAxisShift));
+      tickMarGeometry.vertices.push(new THREE.Vector3(0 - yAxisShift, -10 + chartOffset, i * interval - xAxisShift));
       var tickLine = new THREE.Line(tickMarGeometry, tickMaterial);
       this._dt.scene.add(tickLine);
       
-      words.position.set(0, -20 + chartOffset, i * interval);
+      words.position.set(0 - yAxisShift, -20 + chartOffset, i * interval - xAxisShift);
     }
     
     this._dt.labelGroup.add(words);
@@ -304,6 +316,10 @@ D3THREE.Scatter.prototype.render = function(data) {
 
   this._dt.scene.add(this._nodeGroup);
   
+  // x,y axis shift, so rotation is from center of screen
+  var xAxisShift = this._dt.axisObjects.x.getRotationShift(),
+    yAxisShift = this._dt.axisObjects.y.getRotationShift();
+  
   var self = this;
   d3.select(this._nodeGroup)
         .selectAll()
@@ -316,10 +332,10 @@ D3THREE.Scatter.prototype.render = function(data) {
       return mesh;
     } )
         .attr("position.z", function(d) {
-          return self._dt.axisObjects.x._scale(d.x);
+          return self._dt.axisObjects.x._scale(d.x) - xAxisShift;
         })
         .attr("position.x", function(d) {
-          return self._dt.axisObjects.y._scale(d.y);
+          return self._dt.axisObjects.y._scale(d.y) - yAxisShift;
         })
         .attr("position.y", function(d) {
           return self._dt.axisObjects.z._scale(d.z) + chartOffset;
@@ -399,6 +415,10 @@ D3THREE.Surface.prototype.render = function(threeData) {
 
   this._dt.scene.add(this._nodeGroup);
   
+  // x,y axis shift, so rotation is from center of screen
+  var xAxisShift = this._dt.axisObjects.x.getRotationShift(),
+      yAxisShift = this._dt.axisObjects.y.getRotationShift();
+  
   var self = this;
   d3.select(this._nodeGroup)
         .selectAll()
@@ -412,10 +432,10 @@ D3THREE.Surface.prototype.render = function(threeData) {
       return mesh;
     } )
         .attr("position.z", function(d) {
-          return self._dt.axisObjects.x._scale(d.x);
+          return self._dt.axisObjects.x._scale(d.x) - xAxisShift;
         })
         .attr("position.x", function(d) {
-          return self._dt.axisObjects.y._scale(d.y);
+          return self._dt.axisObjects.y._scale(d.y) - yAxisShift;
         })
         .attr("position.y", function(d) {
           return self._dt.axisObjects.z._scale(d.z) + chartOffset;
@@ -438,9 +458,10 @@ D3THREE.Surface.prototype.render = function(threeData) {
   var material = new THREE.MeshBasicMaterial({color: this._config.color});
 
   for (var i = 0; i < threeData.length; i++) {
-    vertices.push(new THREE.Vector3(self._dt.axisObjects.y._scale(threeData[i].y),
+    vertices.push(new THREE.Vector3(
+      self._dt.axisObjects.y._scale(threeData[i].y) - yAxisShift,
       self._dt.axisObjects.z._scale(threeData[i].z) + chartOffset,
-      self._dt.axisObjects.x._scale(threeData[i].x)));
+      self._dt.axisObjects.x._scale(threeData[i].x) - xAxisShift));
   }
 
   geometry.vertices = vertices;
