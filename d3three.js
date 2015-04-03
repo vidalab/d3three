@@ -159,7 +159,7 @@ D3THREE.Axis.prototype.render = function() {
     interval = this._scale.range()[1];
     ticks = this._scale.domain();
   } else {
-    interval = this._scale.range()[1] / this._scale.ticks().length;
+    interval = this._scale.range()[1] / (this._scale.ticks().length - 1);
     ticks = this._scale.ticks();
   }
   
