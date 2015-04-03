@@ -7,7 +7,11 @@ d3three includes charts.
 
 ### Scatter ###
 
+[Scatter Plot](https://vida.io/documents/Sp2SzNyhgD8JwFbCe)
+
 ### Surface ###
+
+[Surface Plot](https://vida.io/documents/BJXoQv89L3RkG574p)
 
 Copyright Vida Lab Inc. 2014-2015
 
