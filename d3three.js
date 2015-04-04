@@ -254,10 +254,26 @@ D3THREE.Chart.prototype.init = function(dt) {
   }, false );
 }
 
+var cumulativeOffset = function(element) {
+    var top = 0, left = 0;
+    do {
+        top += element.offsetTop  || 0;
+        left += element.offsetLeft || 0;
+        element = element.offsetParent;
+    } while(element);
+
+    return {
+        top: top,
+        left: left
+    };
+};
+
 D3THREE.Chart.prototype.detectNodeHover = function(e) {
+  var boundingRect = this._dt.renderer.domElement.getBoundingClientRect();
+  
   var vector = new THREE.Vector3();
-  vector.x = ( (e.clientX - this._dt.renderer.domElement.offsetLeft) / this._dt.renderer.domElement.width ) * 2 - 1;
-  vector.y = 1 - ( (e.clientY - this._dt.renderer.domElement.offsetTop) / this._dt.renderer.domElement.height ) * 2;
+  vector.x = ( (e.clientX - boundingRect.left) / this._dt.renderer.domElement.width ) * 2 - 1;
+  vector.y = 1 - ( (e.clientY - boundingRect.top) / this._dt.renderer.domElement.height ) * 2;
   vector.z = 1;
   
   // create a check ray
@@ -292,8 +308,8 @@ D3THREE.Chart.prototype.detectNodeHover = function(e) {
     document.getElementById("tooltip-container").innerHTML = html;
     document.getElementById("tooltip-container").style.display = "block";
 
-    document.getElementById("tooltip-container").style.top = (e.clientY + 10) + "px";
-    document.getElementById("tooltip-container").style.left = (e.clientX + 10) + "px";
+    document.getElementById("tooltip-container").style.top = (e.pageY + 10) + "px";
+    document.getElementById("tooltip-container").style.left = (e.pageX + 10) + "px";
   } else {
     document.getElementById("tooltip-container").style.display = "none";
   }
@@ -359,9 +375,11 @@ D3THREE.Surface.prototype = new D3THREE.Chart();
 
 D3THREE.Surface.prototype.onDocumentMouseMove = function(e) {
   // detect intersected spheres
+  var boundingRect = this._dt.renderer.domElement.getBoundingClientRect();
+  
   var vector = new THREE.Vector3();
-  vector.x = ( (e.clientX - this._dt.renderer.domElement.offsetLeft) / this._dt.renderer.domElement.width ) * 2 - 1;
-  vector.y = 1 - ( (e.clientY - this._dt.renderer.domElement.offsetTop) / this._dt.renderer.domElement.height ) * 2;
+  vector.x = ( (e.clientX - boundingRect.left) / this._dt.renderer.domElement.width ) * 2 - 1;
+  vector.y = 1 - ( (e.clientY - boundingRect.top) / this._dt.renderer.domElement.height ) * 2;
   vector.z = 1;
   
   // create a check ray
