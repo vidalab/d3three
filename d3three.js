@@ -254,19 +254,7 @@ D3THREE.Chart.prototype.init = function(dt) {
   }, false );
 }
 
-// Scatter plot
-D3THREE.Scatter = function(dt) {  
-  this.init(dt);
-  
-  this._nodeGroup = new THREE.Object3D();
-  
-  this._config = {color: 0x4682B4, pointRadius: 5};
-}
-
-D3THREE.Scatter.prototype = new D3THREE.Chart();
-
-D3THREE.Scatter.prototype.onDocumentMouseMove = function(e) {
-  // detect intersected spheres
+D3THREE.Chart.prototype.detectNodeHover = function(e) {
   var vector = new THREE.Vector3();
   vector.x = ( (e.clientX - this._dt.renderer.domElement.offsetLeft) / this._dt.renderer.domElement.width ) * 2 - 1;
   vector.y = 1 - ( (e.clientY - this._dt.renderer.domElement.offsetTop) / this._dt.renderer.domElement.height ) * 2;
@@ -309,6 +297,22 @@ D3THREE.Scatter.prototype.onDocumentMouseMove = function(e) {
   } else {
     document.getElementById("tooltip-container").style.display = "none";
   }
+}
+
+// Scatter plot
+D3THREE.Scatter = function(dt) {  
+  this.init(dt);
+  
+  this._nodeGroup = new THREE.Object3D();
+  
+  this._config = {color: 0x4682B4, pointRadius: 5};
+}
+
+D3THREE.Scatter.prototype = new D3THREE.Chart();
+
+D3THREE.Scatter.prototype.onDocumentMouseMove = function(e) {
+  // detect intersected spheres
+  this.detectNodeHover(e);
 }
 
 D3THREE.Scatter.prototype.render = function(data) {
@@ -532,4 +536,52 @@ D3THREE.Surface.prototype.render = function(threeData) {
 
   this._meshSurface = new THREE.Mesh( geometry, material );
   this._dt.scene.add(this._meshSurface);
+}
+
+// Bar plot
+D3THREE.Bar = function(dt) {  
+  this.init(dt);
+  
+  this._nodeGroup = new THREE.Object3D();
+  
+  this._config = {color: 0x4682B4, barSize: 5};
+}
+
+D3THREE.Bar.prototype = new D3THREE.Chart();
+
+D3THREE.Bar.prototype.onDocumentMouseMove = function(e) {
+  this.detectNodeHover(e);
+}
+
+D3THREE.Bar.prototype.render = function(threeData) {
+  /* render data points */
+  this._dt.scene.add(this._nodeGroup);
+  
+  // x,y axis shift, so rotation is from center of screen
+  var xAxisShift = this._dt.axisObjects.x.getRotationShift(),
+      yAxisShift = this._dt.axisObjects.y.getRotationShift();
+  
+  var self = this;
+  d3.select(this._nodeGroup)
+        .selectAll()
+        .data(threeData)
+    .enter().append( function(d) {
+      var height = self._dt.axisObjects.z._scale(d.z) + chartOffset;
+      var geometry = new THREE.BoxGeometry( self._config.barSize, height, self._config.barSize );
+      var material = new THREE.MeshBasicMaterial( {
+        color: self._config.color } );
+      var mesh = new THREE.Mesh( geometry, material );
+      mesh.userData = {x: d.x, y: d.y, z: d.z};
+      return mesh;
+    } )
+        .attr("position.z", function(d) {
+          return self._dt.axisObjects.x._scale(d.x) - xAxisShift;
+        })
+        .attr("position.x", function(d) {
+          return self._dt.axisObjects.y._scale(d.y) - yAxisShift;
+        })
+        .attr("position.y", function(d) {
+          var height = self._dt.axisObjects.z._scale(d.z) + chartOffset;
+          return height / 2;
+        });
 }

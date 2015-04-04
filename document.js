@@ -85,6 +85,26 @@ surface.render(yAxis);
 surface.render(zAxis);
 surface.render(surfaceChart, threeData);
 
+var bar = new D3THREE();
+bar.init('canvas-bar');
+
+var xAxis = d3three.axis(bar)
+                .scale(x)
+                .orient("x")
+                .tickFormat(d3.time.format("%m-%d-%y"));
+var yAxis = d3three.axis(bar)
+                .scale(y)
+                .orient("y");
+var zAxis = d3three.axis(bar)
+                .scale(z)
+                .orient("z");
+
+var barChart = new D3THREE.Bar(bar);
+bar.render(xAxis);
+bar.render(yAxis);
+bar.render(zAxis);
+bar.render(barChart, threeData);
+
 // call animate loop
 d3three.animate();
 
