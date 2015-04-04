@@ -377,34 +377,7 @@ D3THREE.Surface.prototype.onDocumentMouseMove = function(e) {
       this._nodeGroup.children[i].material.opacity = 1;
     }
     
-    var intersects = ray.intersectObjects( this._nodeGroup.children );
-    
-    if (intersects.length > 0) {
-      var obj = intersects[0].object;
-      obj.material.opacity = 0.5;
-    
-      var html = "";
-
-      html += "<div class=\"tooltip_kv\">";
-      html += "<span>";
-      html += "x: " + this._dt.axisObjects.x._tickFormat(obj.userData.x);
-      html += "</span><br>";
-      html += "<span>";
-      html += "y: " + this._dt.axisObjects.y._tickFormat(obj.userData.y);
-      html += "</span><br>";
-      html += "<span>";
-      html += "z: " + this._dt.axisObjects.z._tickFormat(obj.userData.z);
-      html += "</span><br>";
-      html += "</div>";
-
-      document.getElementById("tooltip-container").innerHTML = html;
-      document.getElementById("tooltip-container").style.display = "block";
-
-      document.getElementById("tooltip-container").style.top = (e.clientY + 10) + "px";
-      document.getElementById("tooltip-container").style.left = (e.clientX + 10) + "px";
-    } else {
-      document.getElementById("tooltip-container").style.display = "none";
-    }
+    this.detectNodeHover(e);
   } else {
     // hide nodes
     for (var i = 0; i < this._nodeGroup.children.length; i++) {
