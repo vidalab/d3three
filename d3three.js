@@ -644,3 +644,104 @@ D3THREE.Bar.prototype.render = function(threeData) {
           return height / 2;
         });
 }
+
+// Force layout plot
+D3THREE.Force = function(dt) {  
+  this.init(dt);
+  
+  this._nodeGroup = new THREE.Object3D();
+  
+  this._config = {color: 0x4682B4, linkColor: 0xcccccc, linkWidth: 2};
+}
+
+D3THREE.Force.prototype = new D3THREE.Chart();
+
+D3THREE.Force.prototype.onDocumentMouseMove = function(e) {
+}
+
+D3THREE.Force.prototype.render = function(threeData) {
+  var spheres = [], three_links = [];
+  // Define the 3d force
+  var force = d3.layout.force3d()
+      .nodes(sort_data=[])
+      .links(links=[])
+      .size([50, 50])
+      .gravity(0.3)
+      .charge(-400)
+
+  var DISTANCE = 1;
+
+  for (var i = 0; i < threeData.nodes.length; i++) {
+    sort_data.push({x:threeData.nodes.x + DISTANCE,y:threeData.nodes.y + DISTANCE,z:0})
+  
+    // set up the sphere vars
+    var radius = 5,
+        segments = 16,
+        rings = 16;
+  
+    // create the sphere's material
+    var sphereMaterial = new THREE.MeshLambertMaterial({ color: this._config.color });
+  
+    var sphere = new THREE.Mesh(
+      new THREE.SphereGeometry(
+        radius,
+        segments,
+        rings),
+      sphereMaterial);
+  
+    spheres.push(sphere);
+  
+    // add the sphere to the scene
+    this._dt.scene.add(sphere);
+  }
+
+  for (var i = 0; i < threeData.links.length; i++) {
+    links.push({target:sort_data[threeData.links[i].target],source:sort_data[threeData.links[i].source]});
+  
+    var material = new THREE.LineBasicMaterial({ color: this._config.linkColor,
+                  linewidth: this._config.linkWidth}); 
+    var geometry = new THREE.Geometry();
+  
+    geometry.vertices.push( new THREE.Vector3( 0, 0, 0 ) );
+    geometry.vertices.push( new THREE.Vector3( 0, 0, 0 ) );
+    var line = new THREE.Line( geometry, material );
+    line.userData = { source: threeData.links[i].source,
+                      target: threeData.links[i].target };
+    three_links.push(line);
+    this._dt.scene.add(line);
+  
+    force.start();
+  }
+
+  // set up the axes
+  var x = d3.scale.linear().domain([0, 350]).range([0, 10]),
+      y = d3.scale.linear().domain([0, 350]).range([0, 10]),
+      z = d3.scale.linear().domain([0, 350]).range([0, 10]);
+
+  var self = this;
+  force.on("tick", function(e) {
+    for (var i = 0; i < sort_data.length; i++) {
+      spheres[i].position.set(x(sort_data[i].x) * 40 - 40, y(sort_data[i].y) * 40 - 40,z(sort_data[i].z) * 40 - 40);
+    
+      for (var j = 0; j < three_links.length; j++) {
+        var line = three_links[j];
+        var vi = -1;
+        if (line.userData.source === i) {
+          vi = 0;
+        }
+        if (line.userData.target === i) {
+          vi = 1;
+        }
+      
+        if (vi >= 0) {
+          line.geometry.vertices[vi].x = x(sort_data[i].x) * 40 - 40;
+          line.geometry.vertices[vi].y = y(sort_data[i].y) * 40 - 40;
+          line.geometry.vertices[vi].z = y(sort_data[i].z) * 40 - 40;
+          line.geometry.verticesNeedUpdate = true;
+        }
+      }
+    }
+  
+    //self._dt.renderer.render(self._dt.scene, self._dt.camera);
+  });
+}

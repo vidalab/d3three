@@ -25,6 +25,12 @@
   float: left;
 }
 
+#canvas-force {
+  width: 600px;
+  height: 600px;
+  float: right;
+}
+
 body {
   margin: 0px;
 }
