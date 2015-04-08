@@ -1,5 +1,5 @@
 {
-  "data": ["yields.tsv"],
+  "data": ["yields.tsv", "force_data.json"],
   "javascript": ["document.js"],
   "stylesheet": ["document.css"],
   "html": ["document.html"],

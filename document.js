@@ -1,3 +1,5 @@
+var yieldData = window.data["yields.tsv"];
+
 var scatter = new D3THREE();
 
 scatter.init('canvas-scatter');
@@ -22,14 +24,14 @@ var zAxis = d3three.axis(scatter)
                 .scale(z)
                 .orient("z");
 
-x.domain(d3.extent(data, function(d) { return d3.time.format("%m/%d/%y").parse(d.Date); }));
+x.domain(d3.extent(yieldData, function(d) { return d3.time.format("%m/%d/%y").parse(d.Date); }));
 
-var yDomain = Object.keys(data[0]);
+var yDomain = Object.keys(yieldData[0]);
 yDomain.splice(yDomain.indexOf('Date'), 1);
 y.domain(yDomain);
 
 var maxZ = -Number.MAX_VALUE, minZ = Number.MAX_VALUE;
-data.forEach(function(d) {
+yieldData.forEach(function(d) {
   for (var i = 0; i < Object.keys(d).length; i++) {
     if (Object.keys(d)[i] !== 'Date') {
       if (+d[Object.keys(d)[i]] > maxZ) {
@@ -49,9 +51,9 @@ scatter.render(xAxis);
 scatter.render(yAxis);
 scatter.render(zAxis);
 
-// convert data to 3D x, y, z
+// convert yieldData to 3D x, y, z
 var threeData = []
-data.forEach(function(d) {
+yieldData.forEach(function(d) {
   for (var i = 0; i < Object.keys(d).length; i++) {
     if (Object.keys(d)[i] !== 'Date') {
       threeData.push({
