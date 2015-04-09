@@ -7,28 +7,9 @@
 #canvas {
 }
 
-#canvas-scatter {
-  width: 600px;
-  height: 600px;
-  float: left;
-}
-
-#canvas-surface {
-  width: 600px;
-  height: 600px;
-  float: right;
-}
-
-#canvas-bar {
-  width: 600px;
-  height: 600px;
-  float: left;
-}
-
 #canvas-force {
-  width: 600px;
-  height: 600px;
-  float: right;
+  width: 100%;
+  height: 100%;
 }
 
 body {
