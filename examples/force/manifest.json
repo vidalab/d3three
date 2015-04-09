@@ -1,0 +1,13 @@
+{
+  "data": ["yields.tsv", "force_data.json"],
+  "javascript": ["document.js"],
+  "stylesheet": ["document.css"],
+  "html": ["document.html"],
+  "properties": [
+    {"label":"Color 0","name":"color0","type":"color","value":"#0f608b"},
+    {"label":"Color 1","name":"color1","type":"color","value":"#99ccff"},
+    {"label":"X","name":"x","type":"number","value":400},
+    {"label":"Y","name":"y","type":"number","value":400},
+    {"label":"Z","name":"z","type":"number","value":200}
+  ]
+}
