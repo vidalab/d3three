@@ -1,7 +1,6 @@
 var forceTHREE = new D3THREE();
 forceTHREE.init('canvas-force');
 var forceViz = new D3THREE.Force(forceTHREE);
-//forceTHREE.render(forceViz, window.data["force_data.json"]);
 
 var threeData = window.data["force_data.json"];
 
