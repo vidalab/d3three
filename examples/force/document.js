@@ -46,7 +46,7 @@ for (var i = 0; i < threeData.links.length; i++) {
   links.push({target:sort_data[threeData.links[i].target],source:sort_data[threeData.links[i].source]});
 
   var material = new THREE.LineBasicMaterial({ color: forceViz._config.linkColor,
-                linewidth: forceViz._config.linkWidth}); 
+                linewidth: forceViz._config.linkWidth});
   var geometry = new THREE.Geometry();
 
   geometry.vertices.push( new THREE.Vector3( 0, 0, 0 ) );
@@ -69,7 +69,7 @@ var self = forceViz;
 force.on("tick", function(e) {
   for (var i = 0; i < sort_data.length; i++) {
     spheres[i].position.set(x(sort_data[i].x) * 40 - 40, y(sort_data[i].y) * 40 - 40,z(sort_data[i].z) * 40 - 40);
-  
+
     for (var j = 0; j < three_links.length; j++) {
       var line = three_links[j];
       var vi = -1;
@@ -79,7 +79,7 @@ force.on("tick", function(e) {
       if (line.userData.target === i) {
         vi = 1;
       }
-    
+
       if (vi >= 0) {
         line.geometry.vertices[vi].x = x(sort_data[i].x) * 40 - 40;
         line.geometry.vertices[vi].y = y(sort_data[i].y) * 40 - 40;
@@ -91,7 +91,7 @@ force.on("tick", function(e) {
 });
 
 // call animate loop
-d3three.animate();
+forceTHREE.animate();
 
 // Use sourceURL to enable debugging in Chrome
 //# sourceURL=document.js

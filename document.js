@@ -13,14 +13,14 @@ var y = d3.scale.ordinal()
 var z = d3.scale.linear()
           .range([0, config.z]);
 
-var xAxis = d3three.axis(scatter)
+var xAxis = D3THREE.createAxis(scatter)
                 .scale(x)
                 .orient("x")
                 .tickFormat(d3.time.format("%m-%d-%y"));
-var yAxis = d3three.axis(scatter)
+var yAxis = D3THREE.createAxis(scatter)
                 .scale(y)
                 .orient("y");
-var zAxis = d3three.axis(scatter)
+var zAxis = D3THREE.createAxis(scatter)
                 .scale(z)
                 .orient("z");
 
@@ -37,7 +37,7 @@ yieldData.forEach(function(d) {
       if (+d[Object.keys(d)[i]] > maxZ) {
         maxZ = d[Object.keys(d)[i]];
       }
-      
+
       if (+d[Object.keys(d)[i]] < minZ) {
         minZ = d[Object.keys(d)[i]];
       }
@@ -66,18 +66,19 @@ yieldData.forEach(function(d) {
 
 var scatterChart = new D3THREE.Scatter(scatter);
 scatter.render(scatterChart, threeData);
+scatter.animate();
 
 var surface = new D3THREE();
 surface.init('canvas-surface');
 
-var xAxis = d3three.axis(surface)
+var xAxis = D3THREE.createAxis(surface)
                 .scale(x)
                 .orient("x")
                 .tickFormat(d3.time.format("%m-%d-%y"));
-var yAxis = d3three.axis(surface)
+var yAxis = D3THREE.createAxis(surface)
                 .scale(y)
                 .orient("y");
-var zAxis = d3three.axis(surface)
+var zAxis = D3THREE.createAxis(surface)
                 .scale(z)
                 .orient("z");
 
@@ -86,18 +87,19 @@ surface.render(xAxis);
 surface.render(yAxis);
 surface.render(zAxis);
 surface.render(surfaceChart, threeData);
+surface.animate();
 
 var bar = new D3THREE();
 bar.init('canvas-bar');
 
-var xAxis = d3three.axis(bar)
+var xAxis = D3THREE.createAxis(bar)
                 .scale(x)
                 .orient("x")
                 .tickFormat(d3.time.format("%m-%d-%y"));
-var yAxis = d3three.axis(bar)
+var yAxis = D3THREE.createAxis(bar)
                 .scale(y)
                 .orient("y");
-var zAxis = d3three.axis(bar)
+var zAxis = D3THREE.createAxis(bar)
                 .scale(z)
                 .orient("z");
 
@@ -106,6 +108,7 @@ bar.render(xAxis);
 bar.render(yAxis);
 bar.render(zAxis);
 bar.render(barChart, threeData);
+bar.animate();
 
 var forceTHREE = new D3THREE();
 forceTHREE.init('canvas-force');
@@ -113,7 +116,7 @@ var forceViz = new D3THREE.Force(forceTHREE);
 forceTHREE.render(forceViz, window.data["force_data.json"]);
 
 // call animate loop
-d3three.animate();
+forceTHREE.animate();
 
 // Use sourceURL to enable debugging in Chrome
 //# sourceURL=document.js
