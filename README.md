@@ -15,6 +15,13 @@ d3three includes charts.
 
 [Surface Plot](https://vida.io/documents/BJXoQv89L3RkG574p)
 
+### Bar ###
+
+[Bar Plot](https://vida.io/documents/hK4waAHeTRjuNjSr2)
+
+### Force Layout ###
+[Force Layout](https://vida.io/documents/fDn4mDHX26H9hcyHu)
+
 Copyright Vida Lab Inc. 2014-2015
 
 License: BSD
