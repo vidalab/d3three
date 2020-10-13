@@ -7,21 +7,6 @@ For documentation, [see the wiki page](https://github.com/vidalab/d3three/wiki).
 
 d3three includes charts.
 
-### Scatter ###
-
-[Scatter Plot](https://vida.io/documents/Sp2SzNyhgD8JwFbCe)
-
-### Surface ###
-
-[Surface Plot](https://vida.io/documents/BJXoQv89L3RkG574p)
-
-### Bar ###
-
-[Bar Plot](https://vida.io/documents/hK4waAHeTRjuNjSr2)
-
-### Force Layout ###
-[Force Layout](https://vida.io/documents/fDn4mDHX26H9hcyHu)
-
 Copyright Vida Lab Inc. 2014-2015
 
 License: BSD
